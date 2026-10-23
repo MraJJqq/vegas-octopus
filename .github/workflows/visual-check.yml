@@ -123,24 +123,27 @@ jobs:
         run: |
           node <<'NODE'
           const { chromium } = require('playwright');
+
           (async () => {
             const browser = await chromium.launch({ headless: true });
             const page = await browser.newPage();
-            const pageErrors = [];
-            page.on('pageerror', error => pageErrors.push(error.message));
+            const errors = [];
+            page.on('pageerror', error => errors.push(error.message));
             let mode = 'outage';
+            const requests = { bitget: 0, yahoo: 0, recoveryBitget: 0, recoveryYahoo: 0 };
 
-            // Speed up the dashboard polling only in this test. Keep the real UI logic intact.
+            // Accelerate the dashboard's 30-second polling for this automated test only.
             await page.addInitScript(() => {
-              const originalSetInterval = window.setInterval.bind(window);
+              const original = window.setInterval.bind(window);
               window.setInterval = (fn, delay, ...args) =>
-                originalSetInterval(fn, delay === 30000 ? 250 : delay, ...args);
+                original(fn, delay === 30000 ? 250 : delay, ...args);
             });
 
             await page.route('https://api.bitget.com/**', async route => {
+              requests.bitget++;
               if (mode === 'outage') return route.abort('failed');
-              const url = new URL(route.request().url());
-              const symbol = url.searchParams.get('symbol') || '';
+              requests.recoveryBitget++;
+              const symbol = new URL(route.request().url()).searchParams.get('symbol');
               const price = symbol === 'HYPEUSDT' ? '9.99' : '65000';
               return route.fulfill({
                 status: 200,
@@ -150,7 +153,9 @@ jobs:
             });
 
             await page.route('https://query*.finance.yahoo.com/**', async route => {
+              requests.yahoo++;
               if (mode === 'outage') return route.abort('failed');
+              requests.recoveryYahoo++;
               return route.fulfill({
                 status: 200,
                 contentType: 'application/json',
@@ -162,7 +167,6 @@ jobs:
 
             await page.goto('http://127.0.0.1:8000/index.html', { waitUntil: 'domcontentloaded', timeout: 10000 });
 
-            // Wait for both the symbol and the aggregate status; one may update before the full scan finishes.
             await page.waitForFunction(() => {
               const status = document.querySelector('#market-data-status')?.textContent || '';
               const btc = document.querySelector('[data-quote="BTC"]')?.textContent.trim();
@@ -175,14 +179,17 @@ jobs:
               updated: document.querySelector('#market-last-updated')?.textContent
             }));
             console.log('OUTAGE REPORT ' + JSON.stringify(outage));
+            if (requests.bitget < 1) throw new Error('Outage simulation did not intercept Bitget requests');
 
             mode = 'recovery';
 
+            // Run the same production tick function by waiting for the accelerated next poll.
+            // HYPE uses four decimal places in the dashboard, so expect 9.9900.
             await page.waitForFunction(() => {
               const status = document.querySelector('#market-data-status')?.textContent || '';
               const btc = document.querySelector('[data-quote="BTC"]')?.textContent.trim();
               const hype = document.querySelector('[data-quote="HYPE"]')?.textContent.trim();
-              return /LIVE FEED/.test(status) && btc === '65,000.00' && hype === '9.99';
+              return /LIVE FEED/.test(status) && btc === '65,000.00' && hype === '9.9900';
             }, null, { timeout: 20000 });
 
             const recovered = await page.evaluate(() => ({
@@ -192,9 +199,13 @@ jobs:
               updated: document.querySelector('#market-last-updated')?.textContent
             }));
             console.log('RECOVERY REPORT ' + JSON.stringify(recovered));
+            console.log('REQUEST COUNTS ' + JSON.stringify(requests));
 
+            if (requests.recoveryBitget < 2 || requests.recoveryYahoo < 5) {
+              throw new Error('Recovery mocks were not hit for all expected public-feed requests: ' + JSON.stringify(requests));
+            }
+            if (errors.length) throw new Error('Browser page errors: ' + errors.join('; '));
             await browser.close();
-            if (pageErrors.length) throw new Error('Browser page errors: ' + pageErrors.join('; '));
             console.log('OUTAGE AND RECOVERY CHECK PASSED');
           })().catch(error => { console.error(error); process.exit(1); });
           NODE
