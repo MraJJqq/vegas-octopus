@@ -114,5 +114,23 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;ba
 </section>
 <footer class="footer"><span>VEGAS OCTOPUS · READ-ONLY</span><span id="market-last-updated">等待首次行情请求</span><span>PUBLIC FEEDS · NO ORDERS</span></footer>
 </main>
-</body>
+<script src="./market-data.js"></script>
+<script>
+(async()=>{
+ const jobs=[["BTC",()=>loadQuote("BTCUSDT"),2],["HYPE",()=>loadQuote("HYPEUSDT"),4],["NVDA",()=>loadYahoo("NVDA"),2],["TSLA",()=>loadYahoo("TSLA"),2],["AAPL",()=>loadYahoo("AAPL"),2],["XAU",()=>loadYahoo("GC=F"),2],["CL",()=>loadYahoo("CL=F"),2]];
+ async function tick(){
+  let ok=0;
+  for(const [key,fn,d] of jobs){
+   const el=document.querySelector('[data-quote="'+key+'"]');
+   try{const q=await fn();if(el){el.textContent=q.price.toLocaleString("en-US",{maximumFractionDigits:d,minimumFractionDigits:d});el.title=q.source+" · "+new Date(q.time).toLocaleString();}ok++;}
+   catch(e){if(el){el.textContent="暂不可用";el.title=String(e.message||e);}}
+  }
+  const status=document.querySelector("#market-data-status");
+  if(status)status.textContent=ok===7?"LIVE FEED · 7/7":ok?"PARTIAL FEED · "+ok+"/7":"FEED UNAVAILABLE";
+  const updated=document.querySelector("#market-last-updated");
+  if(updated)updated.textContent="最近检查 "+new Date().toLocaleTimeString()+" · "+ok+"/7 项可用";
+ }
+ await tick();setInterval(tick,30000);
+})();
+</script></body>
 </html>
