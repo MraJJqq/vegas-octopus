@@ -119,6 +119,45 @@ jobs:
           })().catch(e => { console.error(e); process.exit(1); });
           NODE
 
+      - name: Verify quote outage and recovery
+        run: |
+          node <<'NODE'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const page = await browser.newPage();
+            let mode = 'outage';
+            const symbols = ['BTC', 'HYPE', 'NVDA', 'TSLA', 'AAPL', 'XAU', 'CL'];
+            await page.addInitScript(() => {
+              const original = window.setInterval;
+              window.setInterval = (fn, delay, ...args) => original(fn, delay === 30000 ? 250 : delay, ...args);
+            });
+            await page.route('https://api.bitget.com/**', async route => {
+              if (mode === 'outage') return route.abort('failed');
+              const url = new URL(route.request().url());
+              const symbol = url.searchParams.get('symbol') || 'BTCUSDT';
+              return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ code: '00000', data: [{ lastPr: symbol === 'HYPEUSDT' ? '9.99' : '65000', ts: String(Date.now()) }] }) });
+            });
+            await page.route('https://query*.finance.yahoo.com/**', async route => {
+              if (mode === 'outage') return route.abort('failed');
+              const url = new URL(route.request().url());
+              const symbol = decodeURIComponent(url.pathname.split('/').pop());
+              return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ chart: { result: [{ meta: { regularMarketPrice: 123.45, regularMarketTime: Math.floor(Date.now()/1000) } }] } }) });
+            });
+            await page.goto('http://127.0.0.1:8000/index.html', { waitUntil: 'domcontentloaded' });
+            await page.waitForFunction(() => document.querySelector('[data-quote="BTC"]')?.textContent.trim() === '暂不可用', { timeout: 5000 });
+            const outage = await page.evaluate(() => ({ status: document.querySelector('#market-data-status')?.textContent, btc: document.querySelector('[data-quote="BTC"]')?.textContent.trim() }));
+            if (outage.btc !== '暂不可用' || !/FEED UNAVAILABLE/.test(outage.status || '')) throw new Error('Outage state was not displayed correctly: ' + JSON.stringify(outage));
+            mode = 'recovery';
+            await page.waitForFunction(() => document.querySelector('[data-quote="BTC"]')?.textContent.trim() === '65,000.00' && document.querySelector('[data-quote="HYPE"]')?.textContent.trim() === '9.99', { timeout: 7000 });
+            const recovered = await page.evaluate(() => ({ status: document.querySelector('#market-data-status')?.textContent, btc: document.querySelector('[data-quote="BTC"]')?.textContent.trim(), hype: document.querySelector('[data-quote="HYPE"]')?.textContent.trim() }));
+            if (!/LIVE FEED/.test(recovered.status || '')) throw new Error('Feed status did not recover: ' + JSON.stringify(recovered));
+            console.log('OUTAGE REPORT ' + JSON.stringify(outage));
+            console.log('RECOVERY REPORT ' + JSON.stringify(recovered));
+            await browser.close();
+          })().catch(e => { console.error(e); process.exit(1); });
+          NODE
+
       - name: Upload screenshots and layout logs
         if: always()
         uses: actions/upload-artifact@v4
