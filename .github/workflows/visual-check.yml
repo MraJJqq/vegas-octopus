@@ -13,7 +13,7 @@ permissions:
 jobs:
   visual-check:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 8
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,22 +22,29 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install Playwright
         run: |
-          npm install --no-save playwright
-          npx playwright install --with-deps chromium
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install --no-save playwright@1.56.1
+          fi
+          npx playwright install chromium
 
       - name: Start local dashboard server
         run: |
           python3 -m http.server 8000 --directory web > /tmp/octopus-http.log 2>&1 &
-          for i in $(seq 1 20); do curl -fsS http://127.0.0.1:8000/index.html >/dev/null && break; sleep 1; done
+          for i in $(seq 1 10); do curl -fsS http://127.0.0.1:8000/index.html >/dev/null && exit 0; sleep 1; done
+          cat /tmp/octopus-http.log
+          exit 1
 
       - name: Render dashboard at desktop and iPad landscape sizes
         run: |
           node <<'NODE'
           const { chromium } = require('playwright');
-          const path = require('node:path');
           const fs = require('node:fs');
 
           (async () => {
@@ -52,73 +59,37 @@ jobs:
             const failures = [];
             fs.mkdirSync('visual-artifacts', { recursive: true });
 
+            await page.goto(fileUrl, { waitUntil: 'domcontentloaded' });
             for (const c of cases) {
               await page.setViewportSize({ width: c.width, height: c.height });
-              await page.goto(fileUrl, { waitUntil: 'load' });
               await page.screenshot({
                 path: `visual-artifacts/${c.name}.png`,
                 fullPage: true,
                 animations: 'disabled'
               });
-
               const result = await page.evaluate(() => {
-                const selectors = [
-                  '.topbar', '.metrics', '.stage', '.arena',
-                  '.side', '.bottom-grid', '.footer', '.creature',
-                  '.market-node'
-                ];
-                const boxes = {};
-                for (const selector of selectors) {
-                  const el = document.querySelector(selector);
-                  if (!el) {
-                    boxes[selector] = { missing: true };
-                    continue;
-                  }
-                  const r = el.getBoundingClientRect();
-                  boxes[selector] = {
-                    x: Math.round(r.x), y: Math.round(r.y),
-                    width: Math.round(r.width), height: Math.round(r.height),
-                    right: Math.round(r.right), bottom: Math.round(r.bottom)
-                  };
-                }
-                const arena = document.querySelector('.arena').getBoundingClientRect();
+                const selectors = ['.topbar', '.metrics', '.stage', '.arena', '.side', '.bottom-grid', '.footer', '.creature', '.market-node'];
+                const missingCoreSections = selectors.filter(s => !document.querySelector(s));
+                const arena = document.querySelector('.arena')?.getBoundingClientRect();
                 const nodes = [...document.querySelectorAll('.market-node')].map(el => {
                   const r = el.getBoundingClientRect();
-                  return {
-                    name: el.querySelector('.sym')?.textContent?.trim(),
-                    insideArena: r.left >= arena.left - 1 &&
-                      r.right <= arena.right + 1 &&
-                      r.top >= arena.top - 1 &&
-                      r.bottom <= arena.bottom + 1
-                  };
+                  return { name: el.querySelector('.sym')?.textContent?.trim(), insideArena: !!arena && r.left >= arena.left - 1 && r.right <= arena.right + 1 && r.top >= arena.top - 1 && r.bottom <= arena.bottom + 1 };
                 });
-                return {
-                  viewport: { width: innerWidth, height: innerHeight },
-                  documentWidth: document.documentElement.scrollWidth,
-                  horizontalOverflow: document.documentElement.scrollWidth > innerWidth,
-                  missingCoreSections: selectors.filter(s => !document.querySelector(s)),
-                  arenaNodesInside: nodes,
-                  boxes
-                };
+                return { viewport: { width: innerWidth, height: innerHeight }, documentWidth: document.documentElement.scrollWidth, horizontalOverflow: document.documentElement.scrollWidth > innerWidth, missingCoreSections, arenaNodesInside: nodes };
               });
-
               console.log(JSON.stringify({ case: c.name, ...result }, null, 2));
               if (result.horizontalOverflow) failures.push(`${c.name}: horizontal overflow`);
               if (result.missingCoreSections.length) failures.push(`${c.name}: missing sections ${result.missingCoreSections.join(', ')}`);
               const outside = result.arenaNodesInside.filter(n => !n.insideArena);
               if (outside.length) failures.push(`${c.name}: market nodes outside arena: ${outside.map(n => n.name).join(', ')}`);
             }
-
             await browser.close();
-            if (failures.length) {
-              console.error('VISUAL CHECK FAILED:\\n' + failures.join('\\n'));
-              process.exit(1);
-            }
-            console.log('VISUAL CHECK PASSED: no horizontal overflow; core sections present; market nodes within arena.');
+            if (failures.length) { console.error('VISUAL CHECK FAILED:\\n' + failures.join('\\n')); process.exit(1); }
+            console.log('VISUAL CHECK PASSED');
           })().catch(err => { console.error(err); process.exit(1); });
           NODE
 
-      - name: Verify live quote adapter requests
+      - name: Verify quote status quickly
         run: |
           node <<'NODE'
           const { chromium } = require('playwright');
@@ -127,8 +98,11 @@ jobs:
             const page = await browser.newPage();
             const errors = [];
             page.on('pageerror', e => errors.push('pageerror: ' + e.message));
-            await page.goto('http://127.0.0.1:8000/index.html', { waitUntil: 'load' });
-            await page.waitForTimeout(12000);
+            await page.goto('http://127.0.0.1:8000/index.html', { waitUntil: 'domcontentloaded', timeout: 10000 });
+            await page.waitForFunction(() => {
+              const status = document.querySelector('#market-data-status')?.textContent || '';
+              return /LIVE FEED|PARTIAL FEED|FEED UNAVAILABLE/.test(status);
+            }, { timeout: 6000 }).catch(() => {});
             const state = await page.evaluate(() => ({
               status: document.querySelector('#market-data-status')?.textContent,
               lastUpdated: document.querySelector('#market-last-updated')?.textContent,
@@ -139,21 +113,11 @@ jobs:
             if (errors.length) process.exit(1);
             const symbols = ['BTC', 'HYPE', 'NVDA', 'TSLA', 'AAPL', 'XAU', 'CL'];
             const missing = symbols.filter(symbol => !(symbol in state.quotes));
-            if (missing.length) {
-              console.error('Missing quote nodes: ' + missing.join(', '));
-              process.exit(1);
-            }
+            if (missing.length) { console.error('Missing quote nodes: ' + missing.join(', ')); process.exit(1); }
             if (!state.status || !state.lastUpdated || !/最近检查/.test(state.lastUpdated)) {
-              console.error('Market status or refresh timestamp did not update.');
-              process.exit(1);
+              console.error('Market status or refresh timestamp did not update.'); process.exit(1);
             }
-            const report = symbols.map(symbol => ({
-              symbol,
-              displayed: state.quotes[symbol],
-              unavailable: /暂不可用/.test(state.quotes[symbol])
-            }));
-            console.log('QUOTE HEALTH REPORT ' + JSON.stringify(report));
-            console.log('Quote status and refresh timestamp are rendered; live source availability is reported separately.');
+            console.log('QUOTE HEALTH REPORT ' + JSON.stringify(symbols.map(symbol => ({symbol, displayed: state.quotes[symbol], unavailable: /暂不可用/.test(state.quotes[symbol])}))));
           })().catch(e => { console.error(e); process.exit(1); });
           NODE
 
