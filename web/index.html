@@ -122,7 +122,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;ba
   let ok=0;
   for(const [key,fn,d] of jobs){
    const el=document.querySelector('[data-quote="'+key+'"]');
-   try{const q=await fn();if(el){el.textContent=q.price.toLocaleString("en-US",{maximumFractionDigits:d,minimumFractionDigits:d});el.title=q.source+" · "+new Date(q.time).toLocaleString();}ok++;}
+   try{const q=await fn();const ageMs=Math.max(0,Date.now()-Number(q.time||Date.now()));if(el){el.textContent=q.price.toLocaleString("en-US",{maximumFractionDigits:d,minimumFractionDigits:d});el.title=q.source+" · "+new Date(q.time).toLocaleString()+" · "+(ageMs>15*60*1000?"STALE":"FRESH");el.style.color=ageMs>15*60*1000?"#ffcf75":"";}if(ageMs<=15*60*1000)ok++;else throw new Error("Quote is stale");}
    catch(e){if(el){el.textContent="暂不可用";el.title=String(e.message||e);}}
   }
   const status=document.querySelector("#market-data-status");
@@ -144,7 +144,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;ba
    const response=await fetch("./signal-state.json?t="+Date.now(),{cache:"no-store"});
    if(!response.ok)throw new Error("HTTP "+response.status);
    const data=await response.json();
-   const signals=Array.isArray(data.signals)?data.signals:[];
+   const signalAge=Date.now()-new Date(data.updated_at||0).getTime();if(!data.updated_at||!Number.isFinite(signalAge)||signalAge>15*60*1000)throw new Error("Signal feed stale");const signals=Array.isArray(data.signals)?data.signals.filter(s=>s&&s.formal_signal):[];
    const count=signals.length;
    if(!count){
     set(rows[0],".symbol","VEGAS V9");set(rows[0],".tiny","今日暂无正式信号");
