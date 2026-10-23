@@ -154,7 +154,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;ba
     set(rows[2],".symbol","SIGNAL COUNT");set(rows[2],".tiny","只读数据 · 不执行交易");
     set(rows[2],".state",String(count));return;
    }
-   const latest=[...signals].sort((a,b)=>(b.candle_timestamp_ms||0)-(a.candle_timestamp_ms||0)).slice(0,3);
+   const latest=[...new Map([...signals].sort((a,b)=>(b.candle_timestamp_ms||0)-(a.candle_timestamp_ms||0)).map(s=>[(s.symbol||"UNKNOWN").replace(/USDT$/,""),s])).values()].slice(0,3);
    latest.forEach((s,i)=>{
     const row=rows[i];if(!row)return;
     set(row,".symbol",(s.symbol||"UNKNOWN").replace(/USDT$/,""));
