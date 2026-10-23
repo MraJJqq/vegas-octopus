@@ -63,7 +63,7 @@ jobs:
               "signals": valid
           }
           Path("web/signal-state.json").write_text(
-              json.dumps(output, ensure_ascii=False, indent=2) + "\\n",
+              json.dumps(output, ensure_ascii=False, indent=2) + "\n",
               encoding="utf-8"
           )
           print(f"Synced {len(valid)} formal signals for {output['signal_date']}")
