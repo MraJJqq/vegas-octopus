@@ -134,5 +134,49 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;ba
 })();
 </script>
 
+
+<script>
+(async()=>{
+ const rows=[...document.querySelectorAll(".side .panel .signal-row")].slice(0,3);
+ const set=(row,selector,value)=>{const el=row?.querySelector(selector);if(el)el.textContent=value;};
+ async function refreshVegasSignals(){
+  try{
+   const response=await fetch("./signal-state.json?t="+Date.now(),{cache:"no-store"});
+   if(!response.ok)throw new Error("HTTP "+response.status);
+   const data=await response.json();
+   const signals=Array.isArray(data.signals)?data.signals:[];
+   const count=signals.length;
+   if(!count){
+    set(rows[0],".symbol","VEGAS V9");set(rows[0],".tiny","今日暂无正式信号");
+    set(rows[0],".state","NO SIGNAL");rows[0]?.querySelector(".state")?.classList.add("wait");
+    set(rows[1],".symbol","SIGNAL BRIDGE");set(rows[1],".tiny",data.updated_at?"最近同步 "+new Date(data.updated_at).toLocaleTimeString():"等待首次信号同步");
+    set(rows[1],".state",data.connected?"CONNECTED":"WAITING");
+    set(rows[2],".symbol","SIGNAL COUNT");set(rows[2],".tiny","只读数据 · 不执行交易");
+    set(rows[2],".state",String(count));return;
+   }
+   const latest=[...signals].sort((a,b)=>(b.candle_timestamp_ms||0)-(a.candle_timestamp_ms||0)).slice(0,3);
+   latest.forEach((s,i)=>{
+    const row=rows[i];if(!row)return;
+    set(row,".symbol",(s.symbol||"UNKNOWN").replace(/USDT$/,""));
+    set(row,".tiny",(s.timeframe||"1H")+" · "+(s.line||"Vegas触发")+" · 收盘"+(s.filter_side||"已确认")+" EMA12");
+    set(row,".state","FORMAL");row.querySelector(".state")?.classList.remove("wait");
+   });
+   if(latest.length<3){const row=rows[2];set(row,".symbol","TODAY TOTAL");set(row,".tiny","今日正式信号 "+count+" 条");set(row,".state","LIVE");}
+   const note=document.querySelector(".arena .panel-note");
+   if(note)note.textContent="VEGAS V9 · "+count+" SIGNAL(S)";
+   const node=document.querySelector(".node-e .desc");
+   if(node)node.textContent="V9 LINK · "+count+" SIGNAL(S)";
+   const creature=document.querySelector(".creature");
+   if(creature){creature.style.filter="drop-shadow(0 0 32px #ffca76cc)";creature.style.animationDuration="2.8s";}
+   document.querySelectorAll(".coin").forEach((coin,i)=>{coin.style.animationDuration=(2.1+i*.45)+"s";coin.style.boxShadow="0 0 28px #ffc34ccc";});
+  }catch(e){
+   set(rows[0],".symbol","VEGAS V9");set(rows[0],".tiny","信号桥暂不可用");
+   set(rows[0],".state","OFFLINE");rows[0]?.querySelector(".state")?.classList.add("wait");
+  }
+ }
+ await refreshVegasSignals();setInterval(refreshVegasSignals,60000);
+})();
+</script>
+
 </body>
 </html>
