@@ -133,67 +133,6 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;ba
  await tick();setInterval(tick,30000);
 })();
 </script>
-<script>
-(async()=>{
- const SIGNAL_URL="https://raw.githubusercontent.com/MraJJqq/vegas-signal-system/main/v9/.signal-state.json";
- const panel=document.querySelector(".side .panel");
- const rows=panel ? [...panel.querySelectorAll(".signal-row")] : [];
- const statusText=(el,text)=>{if(el)el.textContent=text;};
- async function refreshSignals(){
-  try{
-   const response=await fetch(SIGNAL_URL+"?t="+Date.now(),{cache:"no-store"});
-   if(!response.ok)throw new Error("HTTP "+response.status);
-   const data=await response.json();
-   const daily=data.__daily_formal_signals__||{};
-   const today=new Date().toLocaleDateString("en-CA",{timeZone:"Asia/Shanghai"});
-   const signals=(daily.date===today&&Array.isArray(daily.signals)?daily.signals:[])
-    .filter(s=>s&&s.formal_signal===true);
-   const signalRows=rows.slice(0,3);
-   if(!signalRows.length)return;
-   if(!signals.length){
-    signalRows[0].querySelector(".symbol").textContent="VEGAS V9";
-    signalRows[0].querySelector(".tiny").textContent="今日暂无正式信号";
-    signalRows[0].querySelector(".state").textContent="NO SIGNAL";
-    signalRows[0].querySelector(".state").className="state wait";
-    signalRows[1].querySelector(".symbol").textContent="SIGNAL SOURCE";
-    signalRows[1].querySelector(".tiny").textContent="V9 · 只读连接正常";
-    signalRows[1].querySelector(".state").textContent="CONNECTED";
-    signalRows[1].querySelector(".state").className="state";
-    signalRows[2].querySelector(".symbol").textContent="LAST UPDATE";
-    signalRows[2].querySelector(".tiny").textContent=new Date().toLocaleTimeString();
-    signalRows[2].querySelector(".state").textContent="LIVE";
-    signalRows[2].querySelector(".state").className="state";
-    return;
-   }
-   const latest=[...signals].sort((a,b)=>(b.candle_timestamp_ms||0)-(a.candle_timestamp_ms||0)).slice(0,3);
-   latest.forEach((s,i)=>{
-    const row=signalRows[i];if(!row)return;
-    row.querySelector(".symbol").textContent=(s.symbol||"UNKNOWN").replace(/USDT$/,"");
-    row.querySelector(".tiny").textContent=(s.line||"Vegas line")+" · 收盘"+(s.filter_side||"已确认")+" EMA12";
-    row.querySelector(".state").textContent="FORMAL";
-    row.querySelector(".state").className="state";
-   });
-   for(let i=latest.length;i<signalRows.length;i++){
-    signalRows[i].querySelector(".symbol").textContent="V9 SIGNAL";
-    signalRows[i].querySelector(".tiny").textContent="今日正式信号 "+signals.length+" 条";
-    signalRows[i].querySelector(".state").textContent="CONNECTED";
-    signalRows[i].querySelector(".state").className="state";
-   }
-   document.querySelector(".arena .panel-note").textContent="VEGAS V9 · "+signals.length+" SIGNAL(S)";
-   document.querySelector(".arena .node-e .desc").textContent="V9 LINK · "+signals.length+" SIGNAL(S)";
-   document.querySelector(".creature").style.filter="drop-shadow(0 0 28px #ffca76aa)";
-   document.querySelector(".creature").style.animationDuration="2.8s";
-  }catch(error){
-   if(rows[0]){
-    rows[0].querySelector(".symbol").textContent="VEGAS V9";
-    rows[0].querySelector(".tiny").textContent="信号数据暂不可用";
-    rows[0].querySelector(".state").textContent="OFFLINE";
-    rows[0].querySelector(".state").className="state wait";
-   }
-  }
- }
- await refreshSignals();setInterval(refreshSignals,60000);
-})();
-</script>
+
 </body>
 </html>
