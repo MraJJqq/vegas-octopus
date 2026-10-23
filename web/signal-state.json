@@ -1,5 +1,107 @@
 {
-  "connected": false,
-  "updated_at": null,
-  "signals": []
+  "connected": true,
+  "updated_at": "2026-10-23T12:46:06.553788+00:00",
+  "signal_date": "2026-10-23",
+  "signals": [
+    {
+      "formal_signal": true,
+      "symbol": "JPMUSDT",
+      "timeframe": "1H",
+      "line": "中锋EMA144, 中锋EMA169",
+      "filter_line": "EMA12",
+      "filter_side": "上方",
+      "close_price": 336.55,
+      "candle_timestamp_ms": 1792702800000
+    },
+    {
+      "formal_signal": true,
+      "symbol": "JPMUSDT",
+      "timeframe": "1H",
+      "line": "中锋EMA144, 中锋EMA169, 红峰EMA576, 红峰EMA676",
+      "filter_line": "EMA12",
+      "filter_side": "上方",
+      "close_price": 337.79,
+      "candle_timestamp_ms": 1792710000000
+    },
+    {
+      "formal_signal": true,
+      "symbol": "JPMUSDT",
+      "timeframe": "1H",
+      "line": "红峰EMA576, 红峰EMA676",
+      "filter_line": "EMA12",
+      "filter_side": "上方",
+      "close_price": 337.23,
+      "candle_timestamp_ms": 1792717200000
+    },
+    {
+      "formal_signal": true,
+      "symbol": "JPMUSDT",
+      "timeframe": "1H",
+      "line": "红峰EMA576, 红峰EMA676",
+      "filter_line": "EMA12",
+      "filter_side": "上方",
+      "close_price": 337.43,
+      "candle_timestamp_ms": 1792724400000
+    },
+    {
+      "formal_signal": true,
+      "symbol": "JPMUSDT",
+      "timeframe": "1H",
+      "line": "中锋EMA144, 中锋EMA169, 红峰EMA576, 红峰EMA676",
+      "filter_line": "EMA12",
+      "filter_side": "上方",
+      "close_price": 337.52,
+      "candle_timestamp_ms": 1792731600000
+    },
+    {
+      "formal_signal": true,
+      "symbol": "JPMUSDT",
+      "timeframe": "1H",
+      "line": "中锋EMA144, 中锋EMA169, 红峰EMA576, 红峰EMA676",
+      "filter_line": "EMA12",
+      "filter_side": "下方",
+      "close_price": 336.16,
+      "candle_timestamp_ms": 1792738800000
+    },
+    {
+      "formal_signal": true,
+      "symbol": "JPMUSDT",
+      "timeframe": "1H",
+      "line": "中锋EMA144, 中锋EMA169",
+      "filter_line": "EMA12",
+      "filter_side": "下方",
+      "close_price": 336.61,
+      "candle_timestamp_ms": 1792746000000
+    },
+    {
+      "formal_signal": true,
+      "symbol": "CRWDUSDT",
+      "timeframe": "1H",
+      "line": "中锋EMA169",
+      "filter_line": "EMA12",
+      "filter_side": "下方",
+      "close_price": 238.38,
+      "candle_timestamp_ms": 1792695600000
+    },
+    {
+      "formal_signal": true,
+      "symbol": "CRWDUSDT",
+      "timeframe": "1H",
+      "line": "中锋EMA144, 中锋EMA169",
+      "filter_line": "EMA12",
+      "filter_side": "下方",
+      "close_price": 236.9,
+      "candle_timestamp_ms": 1792706400000
+    },
+    {
+      "formal_signal": true,
+      "symbol": "JPMUSDT",
+      "timeframe": "1H",
+      "line": "中锋EMA144, 中锋EMA169, 红峰EMA676",
+      "filter_line": "EMA12",
+      "filter_side": "下方",
+      "close_price": 336.56,
+      "candle_timestamp_ms": 1792753200000
+    }
+  ]
 }
