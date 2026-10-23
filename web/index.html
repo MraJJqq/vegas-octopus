@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050b16">
+<title>VEGAS OCTOPUS · Trading Cockpit</title>
+<style>
+:root{color-scheme:dark;--bg:#050b16;--panel:rgba(10,23,42,.78);--line:rgba(74,196,255,.22);--cyan:#53e6ff;--blue:#648dff;--green:#65ffd0;--red:#ff668d;--muted:#7891ad}
+*{box-sizing:border-box}html,body{margin:0;width:100%;min-height:100%;background:var(--bg);color:#e8f6ff;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC",sans-serif}body{overflow-x:hidden;background:radial-gradient(ellipse at 50% 38%,#102a49 0%,#081426 40%,#040914 100%)}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;background-image:linear-gradient(rgba(83,230,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(83,230,255,.08) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(transparent,#000 15%,#000 85%,transparent)}
+.shell{max-width:1800px;margin:auto;padding:22px 24px 26px;position:relative}.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);padding-bottom:17px}.brand{display:flex;align-items:center;gap:13px}.sigil{width:42px;height:42px;border:1px solid var(--cyan);border-radius:13px;display:grid;place-items:center;color:var(--cyan);font-size:24px;box-shadow:0 0 24px #53e6ff20,inset 0 0 20px #53e6ff13}.eyebrow{font-size:10px;letter-spacing:.28em;color:var(--cyan);text-transform:uppercase}.brand h1{font-size:20px;letter-spacing:.12em;margin:3px 0 0;font-weight:650}.top-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}.pill{border:1px solid var(--line);border-radius:999px;padding:7px 11px;color:#b7d4eb;font-size:11px;letter-spacing:.08em}.pill.demo{border-color:#d6a54d66;color:#ffd27c;background:#d6a54d12}.led{display:inline-block;width:6px;height:6px;border-radius:50%;background:#ffca6a;margin-right:7px;box-shadow:0 0 9px #ffca6a}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}.metric,.panel{background:linear-gradient(135deg,rgba(15,34,57,.86),rgba(5,15,29,.8));border:1px solid var(--line);border-radius:15px;box-shadow:inset 0 1px #ffffff06,0 14px 36px #0002}.metric{padding:14px 17px}.label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}.value{font-size:clamp(18px,2vw,27px);letter-spacing:.02em;margin-top:7px;font-variant-numeric:tabular-nums}.sub{font-size:10px;color:var(--muted);margin-top:5px}.muted{color:var(--muted)}.green{color:var(--green)}.red{color:var(--red)}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;align-items:stretch}.arena{min-height:520px;position:relative;overflow:hidden;padding:20px;background:radial-gradient(ellipse at 50% 50%,#153c5b55,transparent 60%),linear-gradient(160deg,#0a1c30,#07101f 75%)}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;position:relative;z-index:3}.panel-title{font-size:11px;letter-spacing:.18em;color:#c7eaff}.panel-note{font-size:10px;color:var(--muted)}.arena-ring{position:absolute;width:min(65%,580px);aspect-ratio:1;border:1px solid #53e6ff24;border-radius:50%;left:50%;top:53%;transform:translate(-50%,-50%);box-shadow:0 0 55px #53e6ff0a,inset 0 0 50px #53e6ff08}.arena-ring:before,.arena-ring:after{content:"";position:absolute;inset:12%;border:1px dashed #53e6ff26;border-radius:50%;animation:spin 48s linear infinite}.arena-ring:after{inset:26%;border-style:solid;animation-direction:reverse;animation-duration:65s}.crosshair{position:absolute;left:50%;top:53%;width:70%;height:1px;background:linear-gradient(90deg,transparent,#53e6ff25,transparent)}.crosshair.v{width:1px;height:72%;left:50%;top:17%;background:linear-gradient(transparent,#53e6ff22,transparent)}
+.market-node{position:absolute;z-index:2;border:1px solid #4edcff45;background:#07182bd9;border-radius:10px;padding:10px 12px;min-width:128px;box-shadow:0 0 25px #53e6ff0a;backdrop-filter:blur(8px)}.market-node .sym{font-size:13px;font-weight:700;letter-spacing:.12em}.market-node .desc{font-size:9px;color:var(--muted);margin-top:4px}.market-node .price{font-size:13px;margin-top:8px}.node-a{left:4%;top:18%}.node-b{right:5%;top:19%}.node-c{left:5%;bottom:13%}.node-d{right:5%;bottom:12%}.node-e{left:50%;top:12%;transform:translateX(-50%);min-width:115px;text-align:center}
+.creature{position:absolute;left:50%;top:51%;width:240px;height:250px;transform:translate(-50%,-50%);z-index:2;filter:drop-shadow(0 0 20px #55e6ff55);animation:float 5.5s ease-in-out infinite}.creature.two{width:140px;height:150px;left:72%;top:57%;opacity:.65;transform:translate(-50%,-50%) scale(.8);animation-delay:-2.2s}.tentacle{transform-origin:50% 20%;animation:tentacle 3.8s ease-in-out infinite alternate}.tentacle:nth-child(2n){animation-delay:-1.3s}.tentacle:nth-child(3n){animation-delay:-2.4s}.coin{position:absolute;z-index:3;left:58%;top:35%;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;color:#ffe9a4;background:radial-gradient(circle at 30% 25%,#fff0ae,#e5a938 48%,#7e4d10);border:1px solid #ffdf79;box-shadow:0 0 20px #ffc34c80;animation:coinFloat 4.5s ease-in-out infinite}.coin.c2{left:33%;top:66%;animation-delay:-2s;transform:scale(.72)}
+.arena-footer{position:absolute;bottom:16px;left:20px;right:20px;display:flex;justify-content:space-between;gap:10px;font-size:9px;letter-spacing:.12em;color:#7897b4;z-index:4}.side{display:flex;flex-direction:column;gap:14px}.side .panel{padding:17px}.signal-row,.event-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #ffffff0b}.signal-row:last-child,.event-row:last-child{border-bottom:0}.symbol{font-size:12px;font-weight:650;letter-spacing:.07em}.tiny{font-size:10px;color:var(--muted);margin-top:4px}.state{font-size:9px;letter-spacing:.1em;border-radius:5px;padding:5px 7px;border:1px solid #65ffd044;color:var(--green);white-space:nowrap}.state.wait{color:#ffcf75;border-color:#ffcf7544}.event-icon{width:28px;height:28px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;color:var(--cyan);font-size:13px;flex-shrink:0}.event-main{flex:1;min-width:0}.event-main .symbol{font-size:11px}.event-main .tiny{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bottom-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:14px;margin-top:14px}.lower{padding:17px}.chart{height:95px;width:100%;margin-top:15px}.chart svg{width:100%;height:100%;overflow:visible}.chart-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:9px;margin-top:7px}.alloc{display:flex;gap:4px;margin:17px 0 10px;height:8px}.alloc span{border-radius:9px;background:var(--cyan)}.alloc span:nth-child(2){background:#6d8cff}.alloc span:nth-child(3){background:#9c76ff}.alloc span:nth-child(4){background:#55d6ad}.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:10px;color:var(--muted)}.legend i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--cyan);margin-right:5px}.footer{font-size:9px;color:#506b87;display:flex;justify-content:space-between;gap:12px;margin-top:18px;letter-spacing:.08em}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes float{0%,100%{translate:0 0;rotate:-2deg}50%{translate:0 -11px;rotate:2deg}}@keyframes tentacle{from{rotate:-8deg}to{rotate:9deg}}@keyframes coinFloat{0%,100%{translate:0 0;scale:1}50%{translate:10px -15px;scale:1.08}}
+@media(max-width:900px){.shell{padding:14px}.stage{grid-template-columns:1fr}.arena{min-height:490px}.side{display:grid;grid-template-columns:1fr 1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.bottom-grid{grid-template-columns:1fr}.topbar{align-items:flex-start}.top-right{max-width:48%}}
+@media(max-width:560px){.brand h1{font-size:15px}.eyebrow{font-size:8px}.sigil{width:36px;height:36px}.pill{font-size:9px;padding:6px 8px}.side{grid-template-columns:1fr}.arena{min-height:440px;padding:14px}.market-node{min-width:100px;padding:8px}.node-a{left:3%;top:18%}.node-b{right:3%;top:20%}.node-c{left:3%;bottom:14%}.node-d{right:3%;bottom:13%}.creature{width:190px;height:200px}.creature.two{width:110px;height:120px}.arena-footer{left:14px;right:14px;font-size:8px}.value{font-size:21px}}
+</style>
+</head>
+<body>
+<main class="shell">
+<header class="topbar">
+  <div class="brand"><div class="sigil">⌘</div><div><div class="eyebrow">Autonomous market organism</div><h1>VEGAS <span style="color:var(--cyan)">OCTOPUS</span></h1></div></div>
+  <div class="top-right"><span class="pill demo"><i class="led"></i>DEMO DATA · 非真实行情</span><span class="pill">COCKPIT / 01</span><span class="pill">IPAD LANDSCAPE</span></div>
+</header>
+<section class="metrics">
+  <div class="metric"><div class="label">Account equity · demo</div><div class="value">— — —</div><div class="sub">等待接入真实账户数据</div></div>
+  <div class="metric"><div class="label">Unrealized P&amp;L</div><div class="value muted">— — —</div><div class="sub">无账户数据 · 不展示虚构盈亏</div></div>
+  <div class="metric"><div class="label">Active positions</div><div class="value">—</div><div class="sub">等待只读持仓接口</div></div>
+  <div class="metric"><div class="label">Data link</div><div class="value" style="font-size:19px;color:#ffcf75">NOT CONNECTED</div><div class="sub">当前仅布局原型</div></div>
+</section>
+<section class="stage">
+  <div class="panel arena">
+    <div class="panel-head"><div class="panel-title">01 / MARKET ORGANISM FIELD</div><div class="panel-note">CREATURE MOTION · PREVIEW</div></div>
+    <div class="arena-ring"></div><div class="crosshair"></div><div class="crosshair v"></div>
+    <div class="market-node node-a"><div class="sym">BTC</div><div class="desc">CRYPTO · DEMO SLOT</div><div class="price muted">行情待接入</div></div>
+    <div class="market-node node-b"><div class="sym">US EQUITIES</div><div class="desc">US MARKET · DEMO SLOT</div><div class="price muted">行情待接入</div></div>
+    <div class="market-node node-c"><div class="sym">XAU</div><div class="desc">GOLD · DEMO SLOT</div><div class="price muted">行情待接入</div></div>
+    <div class="market-node node-d"><div class="sym">CL</div><div class="desc">CRUDE OIL · DEMO SLOT</div><div class="price muted">行情待接入</div></div>
+    <div class="market-node node-e"><div class="sym">SIGNAL CORE</div><div class="desc">READ-ONLY LINK</div></div>
+    <svg class="creature" viewBox="0 0 240 250" role="img" aria-label="机械章鱼动画概念">
+      <defs><radialGradient id="body" cx="35%" cy="25%"><stop offset="0" stop-color="#b2fbff"/><stop offset=".35" stop-color="#319dbd"/><stop offset=".75" stop-color="#125078"/><stop offset="1" stop-color="#07192c"/></radialGradient><linearGradient id="arm" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#91faff"/><stop offset=".45" stop-color="#267ba5"/><stop offset="1" stop-color="#0b2441"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+      <g fill="none" stroke="url(#arm)" stroke-width="13" stroke-linecap="round">
+        <path class="tentacle" d="M103 123 C61 137 42 164 57 190 S82 209 66 229"/><path class="tentacle" d="M116 133 C91 160 102 187 126 191 S151 213 137 239"/><path class="tentacle" d="M131 131 C163 149 183 172 166 198 S189 219 207 230"/><path class="tentacle" d="M139 117 C182 117 206 139 198 163 S218 184 228 196"/><path class="tentacle" d="M100 112 C68 99 42 107 30 130 S27 156 14 163"/><path class="tentacle" d="M109 96 C92 67 102 45 126 39 S157 23 153 10"/><path class="tentacle" d="M137 98 C165 73 183 80 190 99 S211 115 229 104"/><path class="tentacle" d="M88 120 C58 132 35 128 27 107 S17 84 8 78"/>
+      </g>
+      <g fill="#09243b" stroke="#70efff" stroke-width="1.5" opacity=".85"><circle cx="58" cy="189" r="5"/><circle cx="126" cy="191" r="5"/><circle cx="166" cy="198" r="5"/><circle cx="198" cy="163" r="5"/><circle cx="30" cy="130" r="5"/><circle cx="126" cy="39" r="5"/><circle cx="190" cy="99" r="5"/></g>
+      <path d="M74 111 C71 81 87 57 116 55 C146 52 169 73 167 103 C166 131 149 151 119 151 C92 151 77 136 74 111Z" fill="url(#body)" stroke="#8af7ff" stroke-width="2" filter="url(#glow)"/>
+      <path d="M91 93 Q120 75 151 94 L145 119 Q121 137 96 119Z" fill="#071a2b" stroke="#55e6ff" stroke-width="1.5"/>
+      <ellipse cx="105" cy="104" rx="7" ry="10" fill="#7afff0"/><ellipse cx="135" cy="104" rx="7" ry="10" fill="#7afff0"/><circle cx="107" cy="103" r="3" fill="#fff"/><circle cx="137" cy="103" r="3" fill="#fff"/>
+      <path d="M101 126 Q120 134 140 125" fill="none" stroke="#ffca76" stroke-width="2" stroke-linecap="round"/>
+      <path d="M98 70 L108 60 L128 60 L143 72" fill="none" stroke="#d0ffff" stroke-width="2" opacity=".8"/>
+      <circle cx="121" cy="80" r="4" fill="#d5ffff" filter="url(#glow)"/>
+    </svg>
+    <svg class="creature two" viewBox="0 0 240 250" aria-hidden="true">
+      <g fill="none" stroke="#4ab7df" stroke-width="12" stroke-linecap="round"><path class="tentacle" d="M100 123 C60 145 51 170 68 197 S70 221 54 235"/><path class="tentacle" d="M120 135 C98 164 121 188 141 201 S153 223 143 240"/><path class="tentacle" d="M143 123 C177 139 191 160 176 187 S197 215 220 220"/><path class="tentacle" d="M91 110 C59 93 44 103 30 124 S27 145 14 157"/></g><path d="M75 110 C70 80 91 58 120 57 C151 56 169 78 166 105 C164 134 146 151 119 151 C92 150 78 135 75 110Z" fill="#1c6588" stroke="#6defff" stroke-width="2"/><ellipse cx="105" cy="105" rx="6" ry="9" fill="#7afff0"/><ellipse cx="135" cy="105" rx="6" ry="9" fill="#7afff0"/>
+    </svg>
+    <div class="coin">$</div><div class="coin c2">$</div>
+    <div class="arena-footer"><span>VISUAL MODE: PROTOTYPE</span><span>NO LIVE ORDERS · NO REAL P&amp;L</span></div>
+  </div>
+  <aside class="side">
+    <div class="panel"><div class="panel-head"><div class="panel-title">02 / SIGNAL STREAM</div><div class="panel-note">READ ONLY</div></div>
+      <div class="signal-row"><div><div class="symbol">VEGAS SIGNAL</div><div class="tiny">等待上游信号接口</div></div><span class="state wait">OFFLINE</span></div>
+      <div class="signal-row"><div><div class="symbol">TRIGGER STATUS</div><div class="tiny">未连接 · 不推断信号</div></div><span class="state wait">PENDING</span></div>
+      <div class="signal-row"><div><div class="symbol">LAST UPDATE</div><div class="tiny">暂无真实数据</div></div><span class="state wait">— —</span></div>
+    </div>
+    <div class="panel"><div class="panel-head"><div class="panel-title">03 / EVENT FEED</div><div class="panel-note">REAL EVENTS ONLY</div></div>
+      <div class="event-row"><div class="event-icon">↗</div><div class="event-main"><div class="symbol">PROFIT EVENT</div><div class="tiny">无真实事件 · 不播放抓币动画</div></div></div>
+      <div class="event-row"><div class="event-icon">↘</div><div class="event-main"><div class="symbol">LOSS EVENT</div><div class="tiny">无真实事件 · 不播放吐币动画</div></div></div>
+      <div class="event-row"><div class="event-icon">◎</div><div class="event-main"><div class="symbol">DATA INTEGRITY</div><div class="tiny">占位数据明确标注 · 未伪装实时</div></div></div>
+    </div>
+  </aside>
+</section>
+<section class="bottom-grid">
+  <div class="panel lower"><div class="panel-head"><div class="panel-title">04 / EQUITY CURVE</div><div class="panel-note">AWAITING ACCOUNT CONNECTOR</div></div><div class="chart"><svg viewBox="0 0 600 100" preserveAspectRatio="none" aria-label="无数据的收益曲线占位"><path d="M0 20H600 M0 50H600 M0 80H600" stroke="#4d7898" stroke-opacity=".18" stroke-dasharray="3 7" fill="none"/><text x="300" y="55" fill="#7891ad" font-size="12" text-anchor="middle">NO ACCOUNT DATA</text></svg></div><div class="chart-labels"><span>曲线将在接入真实账户后显示</span><span>DEMO / EMPTY</span></div></div>
+  <div class="panel lower"><div class="panel-head"><div class="panel-title">05 / MARKET ALLOCATION</div><div class="panel-note">NO POSITION DATA</div></div><div class="alloc"><span style="width:25%;opacity:.4"></span><span style="width:25%;opacity:.4"></span><span style="width:25%;opacity:.4"></span><span style="width:25%;opacity:.4"></span></div><div class="legend"><span><i></i>CRYPTO · —</span><span><i style="background:#6d8cff"></i>EQUITIES · —</span><span><i style="background:#9c76ff"></i>GOLD · —</span><span><i style="background:#55d6ad"></i>OIL · —</span></div></div>
+</section>
+<footer class="footer"><span>VEGAS OCTOPUS · VISUAL FOUNDATION</span><span>READ-ONLY DESIGN · DATA CONNECTORS NOT YET IMPLEMENTED</span><span>BUILD 0.1.0-PROTOTYPE</span></footer>
+</main>
+</body>
+</html>
