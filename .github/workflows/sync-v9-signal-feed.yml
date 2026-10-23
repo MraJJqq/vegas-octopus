@@ -1,0 +1,82 @@
+name: Sync read-only V9 signal feed
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/5 * * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-v9-signal-feed
+  cancel-in-progress: false
+
+jobs:
+  sync-signals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout dashboard repository
+        uses: actions/checkout@v4
+
+      - name: Normalize public V9 signal state
+        env:
+          SOURCE_URL: https://raw.githubusercontent.com/MraJJqq/vegas-signal-system/main/v9/.signal-state.json
+        run: |
+          python - <<'PY'
+          import json, os, urllib.request
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          request = urllib.request.Request(
+              os.environ["SOURCE_URL"],
+              headers={"User-Agent": "vegas-octopus-readonly-signal-sync"}
+          )
+          with urllib.request.urlopen(request, timeout=15) as response:
+              source = json.load(response)
+
+          block = source.get("__daily_formal_signals__", {})
+          signals = block.get("signals", [])
+          valid = []
+          for signal in signals:
+              if not isinstance(signal, dict) or not signal.get("formal_signal"):
+                  continue
+              if not signal.get("symbol") or not signal.get("candle_timestamp_ms"):
+                  continue
+              valid.append({
+                  "formal_signal": True,
+                  "symbol": str(signal["symbol"]),
+                  "timeframe": str(signal.get("timeframe") or "1H"),
+                  "line": str(signal.get("line") or "Vegas触发"),
+                  "filter_line": str(signal.get("filter_line") or "EMA12"),
+                  "filter_side": str(signal.get("filter_side") or "已确认"),
+                  "close_price": signal.get("close_price"),
+                  "candle_timestamp_ms": int(signal["candle_timestamp_ms"])
+              })
+          valid.sort(key=lambda item: item["candle_timestamp_ms"], reverse=True)
+          output = {
+              "connected": True,
+              "source": "MraJJqq/vegas-signal-system v9 read-only state",
+              "updated_at": datetime.now(timezone.utc).isoformat(),
+              "signal_date": block.get("date"),
+              "signals": valid
+          }
+          Path("web/signal-state.json").write_text(
+              json.dumps(output, ensure_ascii=False, indent=2) + "\\n",
+              encoding="utf-8"
+          )
+          print(f"Synced {len(valid)} formal signals for {output['signal_date']}")
+          PY
+
+      - name: Commit updated signal feed when changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add web/signal-state.json
+          if git diff --cached --quiet; then
+            echo "Signal feed unchanged."
+          else
+            git commit -m "chore: sync read-only V9 signal feed"
+            git push
+          fi
