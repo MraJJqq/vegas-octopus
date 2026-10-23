@@ -59,7 +59,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;ba
 <main class="shell">
 <header class="topbar">
   <div class="brand"><div class="sigil">⌘</div><div><div class="eyebrow">Autonomous market organism</div><h1>VEGAS <span style="color:var(--cyan)">OCTOPUS</span></h1></div></div>
-  <div class="top-right"><span class="pill demo"><i class="led"></i>DEMO DATA · 非真实行情</span><span class="pill">COCKPIT / 01</span><span class="pill">IPAD LANDSCAPE</span></div>
+  <div class="top-right"><span class="pill demo" id="market-data-status"><i class="led"></i>行情连接中</span><span class="pill">COCKPIT / 01</span><span class="pill">IPAD LANDSCAPE</span></div>
 </header>
 <section class="metrics">
   <div class="metric"><div class="label">Account equity · demo</div><div class="value">— — —</div><div class="sub">等待接入真实账户数据</div></div>
@@ -71,10 +71,10 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;ba
   <div class="panel arena">
     <div class="panel-head"><div class="panel-title">01 / MARKET ORGANISM FIELD</div><div class="panel-note">CREATURE MOTION · PREVIEW</div></div>
     <div class="arena-ring"></div><div class="crosshair"></div><div class="crosshair v"></div>
-    <div class="market-node node-a"><div class="sym">BTC</div><div class="desc">CRYPTO · DEMO SLOT</div><div class="price muted">行情待接入</div></div>
-    <div class="market-node node-b"><div class="sym">US EQUITIES</div><div class="desc">US MARKET · DEMO SLOT</div><div class="price muted">行情待接入</div></div>
-    <div class="market-node node-c"><div class="sym">XAU</div><div class="desc">GOLD · DEMO SLOT</div><div class="price muted">行情待接入</div></div>
-    <div class="market-node node-d"><div class="sym">CL</div><div class="desc">CRUDE OIL · DEMO SLOT</div><div class="price muted">行情待接入</div></div>
+    <div class="market-node node-a"><div class="sym">BTC / HYPE</div><div class="desc">BITGET SPOT · PUBLIC FEED</div><div class="price">BTC <span data-quote="BTC">连接中</span></div><div class="price">HYPE <span data-quote="HYPE">连接中</span></div></div>
+    <div class="market-node node-b"><div class="sym">US EQUITIES</div><div class="desc">NVDA / TSLA / AAPL</div><div class="price">NVDA <span data-quote="NVDA">连接中</span></div><div class="price">TSLA <span data-quote="TSLA">连接中</span></div><div class="price">AAPL <span data-quote="AAPL">连接中</span></div></div>
+    <div class="market-node node-c"><div class="sym">XAU</div><div class="desc">GOLD FUTURES · GC=F</div><div class="price">$ <span data-quote="XAU">连接中</span></div></div>
+    <div class="market-node node-d"><div class="sym">CL</div><div class="desc">CRUDE OIL FUTURES · CL=F</div><div class="price">$ <span data-quote="CL">连接中</span></div></div>
     <div class="market-node node-e"><div class="sym">SIGNAL CORE</div><div class="desc">READ-ONLY LINK</div></div>
     <svg class="creature" viewBox="0 0 240 250" role="img" aria-label="机械章鱼动画概念">
       <defs><radialGradient id="body" cx="35%" cy="25%"><stop offset="0" stop-color="#b2fbff"/><stop offset=".35" stop-color="#319dbd"/><stop offset=".75" stop-color="#125078"/><stop offset="1" stop-color="#07192c"/></radialGradient><linearGradient id="arm" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#91faff"/><stop offset=".45" stop-color="#267ba5"/><stop offset="1" stop-color="#0b2441"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
@@ -112,7 +112,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;ba
   <div class="panel lower"><div class="panel-head"><div class="panel-title">04 / EQUITY CURVE</div><div class="panel-note">AWAITING ACCOUNT CONNECTOR</div></div><div class="chart"><svg viewBox="0 0 600 100" preserveAspectRatio="none" aria-label="无数据的收益曲线占位"><path d="M0 20H600 M0 50H600 M0 80H600" stroke="#4d7898" stroke-opacity=".18" stroke-dasharray="3 7" fill="none"/><text x="300" y="55" fill="#7891ad" font-size="12" text-anchor="middle">NO ACCOUNT DATA</text></svg></div><div class="chart-labels"><span>曲线将在接入真实账户后显示</span><span>DEMO / EMPTY</span></div></div>
   <div class="panel lower"><div class="panel-head"><div class="panel-title">05 / MARKET ALLOCATION</div><div class="panel-note">NO POSITION DATA</div></div><div class="alloc"><span style="width:25%;opacity:.4"></span><span style="width:25%;opacity:.4"></span><span style="width:25%;opacity:.4"></span><span style="width:25%;opacity:.4"></span></div><div class="legend"><span><i></i>CRYPTO · —</span><span><i style="background:#6d8cff"></i>EQUITIES · —</span><span><i style="background:#9c76ff"></i>GOLD · —</span><span><i style="background:#55d6ad"></i>OIL · —</span></div></div>
 </section>
-<footer class="footer"><span>VEGAS OCTOPUS · VISUAL FOUNDATION</span><span>READ-ONLY DESIGN · DATA CONNECTORS NOT YET IMPLEMENTED</span><span>BUILD 0.1.0-PROTOTYPE</span></footer>
+<footer class="footer"><span>VEGAS OCTOPUS · READ-ONLY</span><span id="market-last-updated">等待首次行情请求</span><span>PUBLIC FEEDS · NO ORDERS</span></footer>
 </main>
 </body>
 </html>
