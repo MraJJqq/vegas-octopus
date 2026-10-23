@@ -28,6 +28,11 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
+      - name: Start local dashboard server
+        run: |
+          python3 -m http.server 8000 --directory web > /tmp/octopus-http.log 2>&1 &
+          for i in $(seq 1 20); do curl -fsS http://127.0.0.1:8000/index.html >/dev/null && break; sleep 1; done
+
       - name: Render dashboard at desktop and iPad landscape sizes
         run: |
           node <<'NODE'
@@ -38,7 +43,7 @@ jobs:
           (async () => {
             const browser = await chromium.launch({ headless: true });
             const page = await browser.newPage({ deviceScaleFactor: 1 });
-            const fileUrl = 'file://' + path.resolve('web/index.html');
+            const fileUrl = 'http://127.0.0.1:8000/index.html';
             const cases = [
               { name: 'desktop-1440x900', width: 1440, height: 900 },
               { name: 'ipad-landscape-1180x820', width: 1180, height: 820 },
@@ -111,6 +116,29 @@ jobs:
             }
             console.log('VISUAL CHECK PASSED: no horizontal overflow; core sections present; market nodes within arena.');
           })().catch(err => { console.error(err); process.exit(1); });
+          NODE
+
+      - name: Verify live quote adapter requests
+        run: |
+          node <<'NODE'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const page = await browser.newPage();
+            const errors = [];
+            page.on('pageerror', e => errors.push('pageerror: ' + e.message));
+            await page.goto('http://127.0.0.1:8000/index.html', { waitUntil: 'load' });
+            await page.waitForTimeout(12000);
+            const state = await page.evaluate(() => ({
+              status: document.querySelector('#market-data-status')?.textContent,
+              lastUpdated: document.querySelector('#market-last-updated')?.textContent,
+              quotes: Object.fromEntries([...document.querySelectorAll('[data-quote]')].map(el => [el.dataset.quote, el.textContent.trim()]))
+            }));
+            console.log(JSON.stringify({state, errors}, null, 2));
+            await browser.close();
+            if (errors.length) process.exit(1);
+            if (!Object.keys(state.quotes).length) process.exit(1);
+          })().catch(e => { console.error(e); process.exit(1); });
           NODE
 
       - name: Upload screenshots and layout logs
