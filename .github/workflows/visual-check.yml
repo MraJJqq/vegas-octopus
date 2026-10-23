@@ -1,0 +1,123 @@
+name: Octopus Dashboard Visual Check
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "web/index.html"
+      - ".github/workflows/visual-check.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  visual-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Render dashboard at desktop and iPad landscape sizes
+        run: |
+          node <<'NODE'
+          const { chromium } = require('playwright');
+          const path = require('node:path');
+          const fs = require('node:fs');
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const page = await browser.newPage({ deviceScaleFactor: 1 });
+            const fileUrl = 'file://' + path.resolve('web/index.html');
+            const cases = [
+              { name: 'desktop-1440x900', width: 1440, height: 900 },
+              { name: 'ipad-landscape-1180x820', width: 1180, height: 820 },
+              { name: 'ipad-landscape-1366x1024', width: 1366, height: 1024 }
+            ];
+            const failures = [];
+            fs.mkdirSync('visual-artifacts', { recursive: true });
+
+            for (const c of cases) {
+              await page.setViewportSize({ width: c.width, height: c.height });
+              await page.goto(fileUrl, { waitUntil: 'load' });
+              await page.screenshot({
+                path: `visual-artifacts/${c.name}.png`,
+                fullPage: true,
+                animations: 'disabled'
+              });
+
+              const result = await page.evaluate(() => {
+                const selectors = [
+                  '.topbar', '.metrics', '.stage', '.arena',
+                  '.side', '.bottom-grid', '.footer', '.creature',
+                  '.market-node'
+                ];
+                const boxes = {};
+                for (const selector of selectors) {
+                  const el = document.querySelector(selector);
+                  if (!el) {
+                    boxes[selector] = { missing: true };
+                    continue;
+                  }
+                  const r = el.getBoundingClientRect();
+                  boxes[selector] = {
+                    x: Math.round(r.x), y: Math.round(r.y),
+                    width: Math.round(r.width), height: Math.round(r.height),
+                    right: Math.round(r.right), bottom: Math.round(r.bottom)
+                  };
+                }
+                const arena = document.querySelector('.arena').getBoundingClientRect();
+                const nodes = [...document.querySelectorAll('.market-node')].map(el => {
+                  const r = el.getBoundingClientRect();
+                  return {
+                    name: el.querySelector('.sym')?.textContent?.trim(),
+                    insideArena: r.left >= arena.left - 1 &&
+                      r.right <= arena.right + 1 &&
+                      r.top >= arena.top - 1 &&
+                      r.bottom <= arena.bottom + 1
+                  };
+                });
+                return {
+                  viewport: { width: innerWidth, height: innerHeight },
+                  documentWidth: document.documentElement.scrollWidth,
+                  horizontalOverflow: document.documentElement.scrollWidth > innerWidth,
+                  missingCoreSections: selectors.filter(s => !document.querySelector(s)),
+                  arenaNodesInside: nodes,
+                  boxes
+                };
+              });
+
+              console.log(JSON.stringify({ case: c.name, ...result }, null, 2));
+              if (result.horizontalOverflow) failures.push(`${c.name}: horizontal overflow`);
+              if (result.missingCoreSections.length) failures.push(`${c.name}: missing sections ${result.missingCoreSections.join(', ')}`);
+              const outside = result.arenaNodesInside.filter(n => !n.insideArena);
+              if (outside.length) failures.push(`${c.name}: market nodes outside arena: ${outside.map(n => n.name).join(', ')}`);
+            }
+
+            await browser.close();
+            if (failures.length) {
+              console.error('VISUAL CHECK FAILED:\\n' + failures.join('\\n'));
+              process.exit(1);
+            }
+            console.log('VISUAL CHECK PASSED: no horizontal overflow; core sections present; market nodes within arena.');
+          })().catch(err => { console.error(err); process.exit(1); });
+          NODE
+
+      - name: Upload screenshots and layout logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: octopus-dashboard-visual-check
+          path: visual-artifacts/
+          if-no-files-found: warn
+          retention-days: 14
