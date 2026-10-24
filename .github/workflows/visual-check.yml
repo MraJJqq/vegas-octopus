@@ -46,7 +46,7 @@ jobs:
           const checks = [
             { symbol: 'BTCUSDT', provider: 'Bitget', url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=BTCUSDT', price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 },
             { symbol: 'HYPEUSDT', provider: 'Bitget', url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=HYPEUSDT', price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 },
-            ...['NVDAUSDT', 'TSLAUSDT', 'AAPLUSDT', 'XAUUSDT', 'CLUSDT'].map(symbol => ({ symbol, provider: 'Bitget', url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=' + symbol, price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 }))
+            ...['NVDAUSDT', 'TSLAUSDT', 'AAPLUSDT', 'XAUUSDT', 'CLUSDT'].map(symbol => ({ symbol, provider: 'Bitget USDT-FUTURES', url: 'https://api.bitget.com/api/v2/mix/market/ticker?productType=USDT-FUTURES&symbol=' + symbol, price: p => Number((Array.isArray(p.data) ? p.data[0] : p.data)?.lastPr || (Array.isArray(p.data) ? p.data[0] : p.data)?.last), valid: p => p.code === '00000' && !!(Array.isArray(p.data) ? p.data[0] : p.data) }))
           ];
           (async () => {
             for (const check of checks) {
@@ -77,7 +77,7 @@ jobs:
               const checks = [
                 { symbol: 'BTC', url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=BTCUSDT', price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 },
                 { symbol: 'HYPE', url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=HYPEUSDT', price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 },
-                ...['NVDAUSDT', 'TSLAUSDT', 'AAPLUSDT', 'XAUUSDT', 'CLUSDT'].map(symbol => ({ symbol, url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=' + symbol, price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 }))
+                ...['NVDAUSDT', 'TSLAUSDT', 'AAPLUSDT', 'XAUUSDT', 'CLUSDT'].map(symbol => ({ symbol, url: 'https://api.bitget.com/api/v2/mix/market/ticker?productType=USDT-FUTURES&symbol=' + symbol, price: p => Number((Array.isArray(p.data) ? p.data[0] : p.data)?.lastPr || (Array.isArray(p.data) ? p.data[0] : p.data)?.last), valid: p => p.code === '00000' && !!(Array.isArray(p.data) ? p.data[0] : p.data) }))
               ];
               const out = [];
               for (const check of checks) {
