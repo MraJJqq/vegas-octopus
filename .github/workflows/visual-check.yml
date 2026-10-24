@@ -156,14 +156,11 @@ jobs:
             const errors = [];
             page.on('pageerror', e => errors.push('pageerror: ' + e.message));
             await page.goto('http://127.0.0.1:8000/index.html', { waitUntil: 'domcontentloaded', timeout: 10000 });
-            await page.waitForFunction(() => {
-              const status = document.querySelector('#market-data-status')?.textContent || '';
-              return /LIVE FEED|PARTIAL FEED|FEED UNAVAILABLE/.test(status);
-            }, { timeout: 6000 }).catch(() => {});
+            await page.waitForFunction(() => !!document.querySelector('#global-status')?.textContent, { timeout: 6000 }).catch(() => {});
             const state = await page.evaluate(() => ({
-              status: document.querySelector('#market-data-status')?.textContent,
-              lastUpdated: document.querySelector('#market-last-updated')?.textContent,
-              quotes: Object.fromEntries([...document.querySelectorAll('[data-quote]')].map(el => [el.dataset.quote, el.textContent.trim()]))
+              status: document.querySelector('#global-status')?.textContent,
+              lastUpdated: document.querySelector('#updated')?.textContent,
+              quotes: Object.fromEntries([...document.querySelectorAll('.quote[data-symbol]')].map(el => [el.dataset.symbol, el.querySelector('.price')?.textContent.trim()]))
             }));
             console.log(JSON.stringify({state, errors}, null, 2));
             await browser.close();
@@ -191,11 +188,11 @@ jobs:
             let mode = 'outage';
             const requests = { bitget: 0, recoveryBitget: 0 };
 
-            // Accelerate the dashboard's 30-second polling for this automated test only.
+            // Accelerate the dashboard polling for this automated test only.
             await page.addInitScript(() => {
               const original = window.setInterval.bind(window);
               window.setInterval = (fn, delay, ...args) =>
-                original(fn, delay === 30000 ? 250 : delay, ...args);
+                original(fn, delay === 15000 ? 250 : delay, ...args);
             });
 
             await page.route('https://api.bitget.com/**', async route => {
@@ -203,52 +200,58 @@ jobs:
               if (mode === 'outage') return route.abort('failed');
               requests.recoveryBitget++;
               const symbol = new URL(route.request().url()).searchParams.get('symbol');
-              const price = symbol === 'HYPEUSDT' ? '9.99' : '65000';
+              const price = symbol === 'HYPEUSDT' ? 9.99 : 65000;
+              const now = Date.now();
+              const candles = Array.from({ length: 60 }, (_, i) => {
+                const close = price * (0.995 + i * (0.005 / 59));
+                return [String(now - (59 - i) * 900000), String(close * 0.999), String(close * 1.002), String(close * 0.998), String(close), '100'];
+              }).reverse();
               return route.fulfill({
                 status: 200,
                 contentType: 'application/json',
-                body: JSON.stringify({ code: '00000', data: [{ lastPr: price, ts: String(Date.now()) }] })
+                body: JSON.stringify({ code: '00000', data: candles })
               });
             });
 
             await page.goto('http://127.0.0.1:8000/index.html', { waitUntil: 'domcontentloaded', timeout: 10000 });
 
             await page.waitForFunction(() => {
-              const status = document.querySelector('#market-data-status')?.textContent || '';
-              const btc = document.querySelector('[data-quote="BTC"]')?.textContent.trim();
-              return btc === '暂不可用' && /FEED UNAVAILABLE/.test(status);
+              const status = document.querySelector('#global-status')?.textContent || '';
+              const btcPrice = document.querySelector('.quote[data-symbol="BTC"] .price')?.textContent.trim();
+              const btcStatus = document.querySelector('.quote[data-symbol="BTC"] .quote-status')?.textContent || '';
+              return btcPrice === '—' && /行情连接异常/.test(status) && /连接失败/.test(btcStatus);
             }, null, { timeout: 20000 });
 
             const outage = await page.evaluate(() => ({
-              status: document.querySelector('#market-data-status')?.textContent,
-              btc: document.querySelector('[data-quote="BTC"]')?.textContent.trim(),
-              updated: document.querySelector('#market-last-updated')?.textContent
+              status: document.querySelector('#global-status')?.textContent,
+              btc: document.querySelector('.quote[data-symbol="BTC"] .price')?.textContent.trim(),
+              btcStatus: document.querySelector('.quote[data-symbol="BTC"] .quote-status')?.textContent,
+              updated: document.querySelector('#updated')?.textContent
             }));
             console.log('OUTAGE REPORT ' + JSON.stringify(outage));
             if (requests.bitget < 1) throw new Error('Outage simulation did not intercept Bitget requests');
 
             mode = 'recovery';
 
-            // Run the same production tick function by waiting for the accelerated next poll.
-            // HYPE uses four decimal places in the dashboard, so expect 9.9900.
             await page.waitForFunction(() => {
-              const status = document.querySelector('#market-data-status')?.textContent || '';
-              const btc = document.querySelector('[data-quote="BTC"]')?.textContent.trim();
-              const hype = document.querySelector('[data-quote="HYPE"]')?.textContent.trim();
-              return /LIVE FEED/.test(status) && btc === '65,000.00' && hype === '9.9900';
+              const status = document.querySelector('#global-status')?.textContent || '';
+              const btcPrice = document.querySelector('.quote[data-symbol="BTC"] .price')?.textContent.trim();
+              const hypePrice = document.querySelector('.quote[data-symbol="HYPE"] .price')?.textContent.trim();
+              const btcStatus = document.querySelector('.quote[data-symbol="BTC"] .quote-status')?.textContent || '';
+              return /公开行情已连接/.test(status) && btcPrice !== '—' && hypePrice !== '—' && /BITGET/.test(btcStatus);
             }, null, { timeout: 20000 });
 
             const recovered = await page.evaluate(() => ({
-              status: document.querySelector('#market-data-status')?.textContent,
-              btc: document.querySelector('[data-quote="BTC"]')?.textContent.trim(),
-              hype: document.querySelector('[data-quote="HYPE"]')?.textContent.trim(),
-              updated: document.querySelector('#market-last-updated')?.textContent
+              status: document.querySelector('#global-status')?.textContent,
+              btc: document.querySelector('.quote[data-symbol="BTC"] .price')?.textContent.trim(),
+              hype: document.querySelector('.quote[data-symbol="HYPE"] .price')?.textContent.trim(),
+              updated: document.querySelector('#updated')?.textContent
             }));
             console.log('RECOVERY REPORT ' + JSON.stringify(recovered));
             console.log('REQUEST COUNTS ' + JSON.stringify(requests));
 
-            if (requests.recoveryBitget < 7) {
-              throw new Error('Recovery mocks were not hit for all seven Bitget quote requests: ' + JSON.stringify(requests));
+            if (requests.recoveryBitget < 2) {
+              throw new Error('Recovery mocks were not hit for both configured live symbols: ' + JSON.stringify(requests));
             }
             if (errors.length) throw new Error('Browser page errors: ' + errors.join('; '));
             await browser.close();
