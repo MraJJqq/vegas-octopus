@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - "web/index.html"
+      - "web/market-data.js"
       - ".github/workflows/visual-check.yml"
 
 permissions:
@@ -38,6 +39,37 @@ jobs:
           for i in $(seq 1 10); do curl -fsS http://127.0.0.1:8000/index.html >/dev/null && exit 0; sleep 1; done
           cat /tmp/octopus-http.log
           exit 1
+
+      - name: Verify live Bitget public market data (read-only)
+        run: |
+          node <<'NODE'
+          const symbols = ['BTCUSDT', 'HYPEUSDT'];
+          (async () => {
+            for (const symbol of symbols) {
+              const url = 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=' + encodeURIComponent(symbol);
+              const response = await fetch(url, { signal: AbortSignal.timeout(12000) });
+              if (!response.ok) throw new Error(symbol + ' HTTP ' + response.status);
+              const payload = await response.json();
+              if (payload.code !== '00000' || !Array.isArray(payload.data) || !payload.data[0]) {
+                throw new Error(symbol + ' Bitget response invalid: ' + JSON.stringify(payload).slice(0, 300));
+              }
+              const row = payload.data[0];
+              const price = Number(row.lastPr);
+              const timestamp = Number(row.ts);
+              if (!Number.isFinite(price) || price <= 0 || !Number.isFinite(timestamp) || timestamp <= 0) {
+                throw new Error(symbol + ' invalid price/timestamp');
+              }
+              console.log('BITGET LIVE READ-ONLY ' + JSON.stringify({
+                symbol,
+                price,
+                timestamp: new Date(timestamp).toISOString(),
+                source: 'Bitget public spot API',
+                tradingEnabled: false
+              }));
+            }
+            console.log('LIVE BITGET PUBLIC MARKET DATA CHECK PASSED');
+          })().catch(error => { console.error(error); process.exit(1); });
+          NODE
 
       - name: Render dashboard at desktop and iPad landscape sizes
         run: |
