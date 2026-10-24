@@ -117,7 +117,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;ba
 <script src="./market-data.js"></script>
 <script>
 (async()=>{
- const jobs=[["BTC",()=>loadQuote("BTCUSDT"),2],["HYPE",()=>loadQuote("HYPEUSDT"),4],["NVDA",()=>loadYahoo("NVDA"),2],["TSLA",()=>loadYahoo("TSLA"),2],["AAPL",()=>loadYahoo("AAPL"),2],["XAU",()=>loadYahoo("GC=F"),2],["CL",()=>loadYahoo("CL=F"),2]];
+ const jobs=[["BTC",()=>loadQuote("BTCUSDT"),2],["HYPE",()=>loadQuote("HYPEUSDT"),4],["NVDA",()=>loadFuturesQuote("NVDAUSDT"),2],["TSLA",()=>loadFuturesQuote("TSLAUSDT"),2],["AAPL",()=>loadFuturesQuote("AAPLUSDT"),2],["XAU",()=>loadFuturesQuote("XAUUSDT"),2],["CL",()=>loadFuturesQuote("CLUSDT"),2]];
  async function tick(){
   let ok=0;
   for(const [key,fn,d] of jobs){
