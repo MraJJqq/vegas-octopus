@@ -46,7 +46,7 @@ jobs:
           const checks = [
             { symbol: 'BTCUSDT', provider: 'Bitget', url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=BTCUSDT', price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 },
             { symbol: 'HYPEUSDT', provider: 'Bitget', url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=HYPEUSDT', price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 },
-            ...['NVDA', 'TSLA', 'AAPL', 'XAU', 'CL'].map(symbol => ({ symbol, provider: 'Yahoo Finance', url: 'https://query1.finance.yahoo.com/v8/finance/chart/' + symbol + '?range=1d&interval=1m', price: p => Number(p.chart?.result?.[0]?.meta?.regularMarketPrice), valid: p => Array.isArray(p.chart?.result) && p.chart.result.length > 0 }))
+            ...['NVDAUSDT', 'TSLAUSDT', 'AAPLUSDT', 'XAUUSDT', 'CLUSDT'].map(symbol => ({ symbol, provider: 'Bitget', url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=' + symbol, price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 }))
           ];
           (async () => {
             for (const check of checks) {
@@ -56,7 +56,7 @@ jobs:
               if (!check.valid(payload)) throw new Error(check.symbol + ' invalid response: ' + JSON.stringify(payload).slice(0, 300));
               const price = check.price(payload);
               if (!Number.isFinite(price) || price <= 0) throw new Error(check.symbol + ' invalid price');
-              const rawTime = check.provider === 'Bitget' ? Number(payload.data[0].ts) : Number(payload.chart.result[0].meta.regularMarketTime) * 1000;
+              const rawTime = Number(payload.data[0].ts);
               console.log('LIVE PUBLIC QUOTE READ-ONLY ' + JSON.stringify({ symbol: check.symbol, price, timestamp: Number.isFinite(rawTime) && rawTime > 0 ? new Date(rawTime).toISOString() : 'provider timestamp unavailable', source: check.provider, tradingEnabled: false }));
             }
             console.log('ALL SEVEN LIVE PUBLIC QUOTES CHECK PASSED');
@@ -77,7 +77,7 @@ jobs:
               const checks = [
                 { symbol: 'BTC', url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=BTCUSDT', price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 },
                 { symbol: 'HYPE', url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=HYPEUSDT', price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 },
-                ...['NVDA', 'TSLA', 'AAPL', 'XAU', 'CL'].map(symbol => ({ symbol, url: 'https://query1.finance.yahoo.com/v8/finance/chart/' + symbol + '?range=1d&interval=1m', price: p => Number(p.chart?.result?.[0]?.meta?.regularMarketPrice), valid: p => Array.isArray(p.chart?.result) && p.chart.result.length > 0 }))
+                ...['NVDAUSDT', 'TSLAUSDT', 'AAPLUSDT', 'XAUUSDT', 'CLUSDT'].map(symbol => ({ symbol, url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=' + symbol, price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 }))
               ];
               const out = [];
               for (const check of checks) {
@@ -191,7 +191,7 @@ jobs:
             const errors = [];
             page.on('pageerror', error => errors.push(error.message));
             let mode = 'outage';
-            const requests = { bitget: 0, yahoo: 0, recoveryBitget: 0, recoveryYahoo: 0 };
+            const requests = { bitget: 0, recoveryBitget: 0 };
 
             // Accelerate the dashboard's 30-second polling for this automated test only.
             await page.addInitScript(() => {
@@ -210,19 +210,6 @@ jobs:
                 status: 200,
                 contentType: 'application/json',
                 body: JSON.stringify({ code: '00000', data: [{ lastPr: price, ts: String(Date.now()) }] })
-              });
-            });
-
-            await page.route('https://query*.finance.yahoo.com/**', async route => {
-              requests.yahoo++;
-              if (mode === 'outage') return route.abort('failed');
-              requests.recoveryYahoo++;
-              return route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({
-                  chart: { result: [{ meta: { regularMarketPrice: 123.45, regularMarketTime: Math.floor(Date.now() / 1000) } }] }
-                })
               });
             });
 
@@ -262,8 +249,8 @@ jobs:
             console.log('RECOVERY REPORT ' + JSON.stringify(recovered));
             console.log('REQUEST COUNTS ' + JSON.stringify(requests));
 
-            if (requests.recoveryBitget < 2 || requests.recoveryYahoo < 5) {
-              throw new Error('Recovery mocks were not hit for all expected public-feed requests: ' + JSON.stringify(requests));
+            if (requests.recoveryBitget < 7) {
+              throw new Error('Recovery mocks were not hit for all seven Bitget quote requests: ' + JSON.stringify(requests));
             }
             if (errors.length) throw new Error('Browser page errors: ' + errors.join('; '));
             await browser.close();
