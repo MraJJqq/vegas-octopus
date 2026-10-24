@@ -174,7 +174,7 @@ jobs:
             if (!state.status || !state.lastUpdated || !/最近检查/.test(state.lastUpdated)) {
               console.error('Market status or refresh timestamp did not update.'); process.exit(1);
             }
-            console.log('QUOTE HEALTH REPORT ' + JSON.stringify(symbols.map(symbol => ({symbol, displayed: state.quotes[symbol], unavailable: /暂不可用/.test(state.quotes[symbol])}))));
+            console.log('QUOTE HEALTH REPORT ' + JSON.stringify(symbols.map(symbol => ({symbol, displayed: state.quotes[symbol], configuredForLiveData: ['BTC', 'HYPE'].includes(symbol)}))));
           })().catch(e => { console.error(e); process.exit(1); });
           NODE
 
