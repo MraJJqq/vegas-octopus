@@ -43,31 +43,23 @@ jobs:
       - name: Verify live Bitget public market data (read-only)
         run: |
           node <<'NODE'
-          const symbols = ['BTCUSDT', 'HYPEUSDT'];
+          const checks = [
+            { symbol: 'BTCUSDT', provider: 'Bitget', url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=BTCUSDT', price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 },
+            { symbol: 'HYPEUSDT', provider: 'Bitget', url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=HYPEUSDT', price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 },
+            ...['NVDA', 'TSLA', 'AAPL', 'XAU', 'CL'].map(symbol => ({ symbol, provider: 'Yahoo Finance', url: 'https://query1.finance.yahoo.com/v8/finance/chart/' + symbol + '?range=1d&interval=1m', price: p => Number(p.chart?.result?.[0]?.meta?.regularMarketPrice), valid: p => Array.isArray(p.chart?.result) && p.chart.result.length > 0 }))
+          ];
           (async () => {
-            for (const symbol of symbols) {
-              const url = 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=' + encodeURIComponent(symbol);
-              const response = await fetch(url, { signal: AbortSignal.timeout(12000) });
-              if (!response.ok) throw new Error(symbol + ' HTTP ' + response.status);
+            for (const check of checks) {
+              const response = await fetch(check.url, { signal: AbortSignal.timeout(12000) });
+              if (!response.ok) throw new Error(check.symbol + ' HTTP ' + response.status);
               const payload = await response.json();
-              if (payload.code !== '00000' || !Array.isArray(payload.data) || !payload.data[0]) {
-                throw new Error(symbol + ' Bitget response invalid: ' + JSON.stringify(payload).slice(0, 300));
-              }
-              const row = payload.data[0];
-              const price = Number(row.lastPr);
-              const timestamp = Number(row.ts);
-              if (!Number.isFinite(price) || price <= 0 || !Number.isFinite(timestamp) || timestamp <= 0) {
-                throw new Error(symbol + ' invalid price/timestamp');
-              }
-              console.log('BITGET LIVE READ-ONLY ' + JSON.stringify({
-                symbol,
-                price,
-                timestamp: new Date(timestamp).toISOString(),
-                source: 'Bitget public spot API',
-                tradingEnabled: false
-              }));
+              if (!check.valid(payload)) throw new Error(check.symbol + ' invalid response: ' + JSON.stringify(payload).slice(0, 300));
+              const price = check.price(payload);
+              if (!Number.isFinite(price) || price <= 0) throw new Error(check.symbol + ' invalid price');
+              const rawTime = check.provider === 'Bitget' ? Number(payload.data[0].ts) : Number(payload.chart.result[0].meta.regularMarketTime) * 1000;
+              console.log('LIVE PUBLIC QUOTE READ-ONLY ' + JSON.stringify({ symbol: check.symbol, price, timestamp: Number.isFinite(rawTime) && rawTime > 0 ? new Date(rawTime).toISOString() : 'provider timestamp unavailable', source: check.provider, tradingEnabled: false }));
             }
-            console.log('LIVE BITGET PUBLIC MARKET DATA CHECK PASSED');
+            console.log('ALL SEVEN LIVE PUBLIC QUOTES CHECK PASSED');
           })().catch(error => { console.error(error); process.exit(1); });
           NODE
 
@@ -82,29 +74,29 @@ jobs:
             page.on('pageerror', error => failures.push(error.message));
             await page.goto('http://127.0.0.1:8000/index.html', { waitUntil: 'domcontentloaded', timeout: 10000 });
             const result = await page.evaluate(async () => {
-              const symbols = ['BTCUSDT', 'HYPEUSDT'];
+              const checks = [
+                { symbol: 'BTC', url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=BTCUSDT', price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 },
+                { symbol: 'HYPE', url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=HYPEUSDT', price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 },
+                ...['NVDA', 'TSLA', 'AAPL', 'XAU', 'CL'].map(symbol => ({ symbol, url: 'https://query1.finance.yahoo.com/v8/finance/chart/' + symbol + '?range=1d&interval=1m', price: p => Number(p.chart?.result?.[0]?.meta?.regularMarketPrice), valid: p => Array.isArray(p.chart?.result) && p.chart.result.length > 0 }))
+              ];
               const out = [];
-              for (const symbol of symbols) {
+              for (const check of checks) {
                 try {
-                  const response = await fetch('https://api.bitget.com/api/v2/spot/market/tickers?symbol=' + encodeURIComponent(symbol), {
-                    cache: 'no-store',
-                    signal: AbortSignal.timeout(12000)
-                  });
+                  const response = await fetch(check.url, { cache: 'no-store', signal: AbortSignal.timeout(12000) });
                   const payload = await response.json();
-                  const row = payload.data && payload.data[0];
-                  const price = Number(row && row.lastPr);
-                  out.push({ symbol, ok: response.ok && payload.code === '00000' && Number.isFinite(price) && price > 0, status: response.status, price: Number.isFinite(price) ? price : null });
+                  const price = check.price(payload);
+                  out.push({ symbol: check.symbol, ok: response.ok && check.valid(payload) && Number.isFinite(price) && price > 0, status: response.status, price: Number.isFinite(price) ? price : null });
                 } catch (error) {
-                  out.push({ symbol, ok: false, error: String(error && error.message || error) });
+                  out.push({ symbol: check.symbol, ok: false, error: String(error && error.message || error) });
                 }
               }
               return out;
             });
             console.log('BROWSER BITGET ACCESS ' + JSON.stringify(result));
             if (failures.length) throw new Error('Browser page errors: ' + failures.join('; '));
-            if (result.some(item => !item.ok)) throw new Error('Browser cannot read all Bitget public quotes; investigate CORS/network restrictions.');
+            if (result.some(item => !item.ok)) throw new Error('Browser cannot read all seven public quotes; investigate provider/CORS/network restrictions.');
             await browser.close();
-            console.log('BROWSER-SIDE BITGET ACCESS PASSED');
+            console.log('BROWSER-SIDE ALL SEVEN QUOTES PASSED');
           })().catch(error => { console.error(error); process.exit(1); });
           NODE
 
