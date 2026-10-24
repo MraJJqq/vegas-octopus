@@ -39,7 +39,7 @@ footer{grid-column:1/-1;display:flex;justify-content:space-between;align-items:c
 <main class="app">
 <header>
  <div class="brand"><div class="mark">◉</div><div><div class="kicker">LIVE MARKET ORGANISM</div><h1>VEGAS <span style="color:#a7c5ff">章鱼</span></h1></div></div>
- <div class="status"><i class="dot" id="global-dot"></i><span id="global-status">正在连接公开行情</span></div>
+ <div class="status"><i class="dot" id="global-dot"></i><span id="global-status">正在连接 Bitget 行情</span></div>
 </header>
 <section class="field" aria-label="中央能量神经大脑与水母动画">
  <div class="reserved top" aria-hidden="true"></div><div class="reserved bottom" aria-hidden="true"></div>
@@ -49,19 +49,18 @@ footer{grid-column:1/-1;display:flex;justify-content:space-between;align-items:c
 <section class="markets" id="markets" aria-label="实时市场行情">
  <article class="quote disconnected" data-symbol="BTC" style="--asset:#52bfff"><div class="quote-head"><span class="symbol">BTC</span><span class="quote-status">连接中</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
  <article class="quote disconnected" data-symbol="HYPE" style="--asset:#52bfff"><div class="quote-head"><span class="symbol">HYPE</span><span class="quote-status">连接中</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
- <article class="quote disconnected" data-symbol="XAU" style="--asset:#e6c47c"><div class="quote-head"><span class="symbol">XAU</span><span class="quote-status">未接入数据源</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
- <article class="quote disconnected" data-symbol="CL" style="--asset:#53e5b4"><div class="quote-head"><span class="symbol">CL</span><span class="quote-status">未接入数据源</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
- <article class="quote disconnected" data-symbol="NVDA" style="--asset:#b49aff"><div class="quote-head"><span class="symbol">NVDA</span><span class="quote-status">未接入数据源</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
- <article class="quote disconnected" data-symbol="TSLA" style="--asset:#b49aff"><div class="quote-head"><span class="symbol">TSLA</span><span class="quote-status">未接入数据源</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
- <article class="quote disconnected" data-symbol="AAPL" style="--asset:#8beaff"><div class="quote-head"><span class="symbol">AAPL</span><span class="quote-status">未接入数据源</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
+ <article class="quote disconnected" data-symbol="XAU" style="--asset:#e6c47c"><div class="quote-head"><span class="symbol">XAU</span><span class="quote-status">Bitget 合约连接中</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
+ <article class="quote disconnected" data-symbol="CL" style="--asset:#53e5b4"><div class="quote-head"><span class="symbol">CL</span><span class="quote-status">Bitget 合约连接中</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
+ <article class="quote disconnected" data-symbol="NVDA" style="--asset:#b49aff"><div class="quote-head"><span class="symbol">NVDA</span><span class="quote-status">Bitget 合约连接中</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
+ <article class="quote disconnected" data-symbol="TSLA" style="--asset:#b49aff"><div class="quote-head"><span class="symbol">TSLA</span><span class="quote-status">Bitget 合约连接中</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
+ <article class="quote disconnected" data-symbol="AAPL" style="--asset:#8beaff"><div class="quote-head"><span class="symbol">AAPL</span><span class="quote-status">Bitget 合约连接中</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
 </section>
-<footer><span>VEGAS OCTOPUS · BUILD 01</span><span id="updated">不展示模拟行情 / 不执行交易</span><span>iPAD · LANDSCAPE READY</span></footer>
+<footer><span>VEGAS OCTOPUS · BUILD 02</span><span id="updated">Bitget 公开行情 · 只读，不执行交易</span><span>iPAD · LANDSCAPE READY</span></footer>
 </main>
 <script>
 (() => {
  const COLORS=["#52bfff","#b49aff","#8beaff","#e6c47c","#53e5b4"];
  const reduceMotion=matchMedia("(prefers-reduced-motion: reduce)").matches;
- // Build a layered neural network in the central square.
  const ns=document.getElementById("brain-net"), dots=document.getElementById("brain-nodes");
  const pts=[];
  for(let i=0;i<74;i++){const a=i*2.3999632297,r=55+Math.sqrt((i+.5)/74)*205;pts.push({x:300+Math.cos(a)*r*(.75+Math.random()*.24),y:300+Math.sin(a)*r*(.7+Math.random()*.25),z:Math.random(),p:Math.random()*6.28});}
@@ -69,7 +68,6 @@ footer{grid-column:1/-1;display:flex;justify-content:space-between;align-items:c
  pts.forEach((p,i)=>{const nearest=pts.map((q,j)=>({q,j,d:(p.x-q.x)**2+(p.y-q.y)**2})).filter(o=>o.j!==i).sort((a,b)=>a.d-b.d).slice(0,2);nearest.forEach(({q})=>{lines+=`<line x1="${p.x.toFixed(1)}" y1="${p.y.toFixed(1)}" x2="${q.x.toFixed(1)}" y2="${q.y.toFixed(1)}" stroke="${Math.random()>.72?"#8beaff":"#8795ff"}" stroke-opacity=".18" stroke-width=".8"/>`;});});
  ns.innerHTML=lines;
  dots.innerHTML=pts.map(p=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${(1+p.z*1.8).toFixed(1)}" fill="${p.z>.7?"#8beaff":"#a7b3ff"}" opacity=".45"><animate attributeName="opacity" values=".2;.85;.2" dur="${(2.8+p.z*4).toFixed(1)}s" begin="-${(p.p%5).toFixed(1)}s" repeatCount="indefinite"/></circle>`).join("");
- // Five translucent jellyfish, each with 10–12 flowing tendrils.
  const canvas=document.getElementById("space"),ctx=canvas.getContext("2d");
  const jellies=COLORS.map((color,i)=>({x:Math.random(),y:Math.random(),z:.45+Math.random()*.5,vx:(Math.random()-.5)*.00018,vy:(Math.random()-.5)*.00015,phase:Math.random()*7,color,target:null,i}));
  let w=0,h=0,dpr=1;
@@ -77,7 +75,7 @@ footer{grid-column:1/-1;display:flex;justify-content:space-between;align-items:c
  addEventListener("resize",resize,{passive:true});resize();
  const quotes={};
  function drawJelly(j,t){
-   const x=j.x*w,y=j.y*h,s=(20+j.z*17),activity=Math.min(1,Math.abs(j.vx)+Math.abs(j.vy))*10000;
+   const x=j.x*w,y=j.y*h,s=(20+j.z*17);
    ctx.save();ctx.translate(x,y);ctx.scale(j.z,j.z);ctx.globalAlpha=.46+j.z*.3;
    const g=ctx.createRadialGradient(-s*.25,-s*.35,1,0,0,s*1.25);g.addColorStop(0,"#ffffffc7");g.addColorStop(.18,j.color+"aa");g.addColorStop(.65,j.color+"55");g.addColorStop(1,j.color+"00");
    ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(0,0,s*1.05,s*.78+Math.sin(t*.001+j.phase)*2,0,Math.PI,Math.PI*2);ctx.bezierCurveTo(s,-s*.05,s*.6,s*.55,0,s*.65);ctx.bezierCurveTo(-s*.6,s*.55,-s,-s*.05,-s,-s*.05);ctx.fill();
@@ -90,9 +88,71 @@ footer{grid-column:1/-1;display:flex;justify-content:space-between;align-items:c
  requestAnimationFrame(animate);
  const fmt=n=>n>=1000?n.toLocaleString("en-US",{maximumFractionDigits:2}):n>=1?n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:4}):n.toLocaleString("en-US",{maximumSignificantDigits:6});
  function pathFor(values){if(!values||values.length<2)return "";const lo=Math.min(...values),hi=Math.max(...values),range=hi-lo||1;return values.map((v,i)=>(i?"L":"M")+(i*160/(values.length-1)).toFixed(2)+" "+(32-(v-lo)/range*27).toFixed(2)).join(" ");}
- async function loadBitget(symbol){const url="https://api.bitget.com/api/v2/spot/market/candles?symbol="+symbol+"&granularity=15min&limit=60";const r=await fetch(url,{cache:"no-store"});if(!r.ok)throw Error("HTTP "+r.status);const j=await r.json();if(j.code!=="00000"||!Array.isArray(j.data)||!j.data.length)throw Error("No market data");const rows=j.data.slice().reverse();return {price:Number(rows.at(-1)[4]),open:Number(rows[0][1]),values:rows.map(x=>Number(x[4])),time:Number(rows.at(-1)[0])};}
- async function updateQuote(symbol,apiSymbol){const card=document.querySelector('[data-symbol="'+symbol+'"]');if(!card){console.warn("Missing quote card:",symbol);return false;}try{const q=await loadBitget(apiSymbol);if(!Number.isFinite(q.price)||q.price<=0)throw Error("Invalid price");const pct=(q.price/q.open-1)*100;card.querySelector(".price").textContent=fmt(q.price);card.querySelector(".change").textContent=(pct>=0?"+":"")+pct.toFixed(2)+"%";card.querySelector(".quote-status").textContent="BITGET · 15M";const p=pathFor(q.values);card.querySelector(".line").setAttribute("d",p);card.querySelector(".glow").setAttribute("d",p);card.classList.remove("disconnected");card.querySelector(".quote-status").style.color="#67dcb8";quotes[symbol]=q;return true;}catch(e){card.querySelector(".quote-status").textContent=quotes[symbol]?"数据中断 · 保留上次":"连接失败";card.classList.add("disconnected");return false;}}
- async function refresh(){const results=await Promise.all([updateQuote("BTC","BTCUSDT"),updateQuote("HYPE","HYPEUSDT")]);const ok=results.some(Boolean);document.getElementById("global-dot").classList.toggle("live",ok);document.getElementById("global-status").textContent=ok?"公开行情已连接":"行情连接异常";document.getElementById("updated").textContent="最近检查 "+new Date().toLocaleTimeString()+" · 仅公开行情";document.getElementById("brain-state").textContent=ok?"MARKET DATA RECEIVED":"WAITING FOR MARKET DATA";}
+ const markets=[
+  {card:"BTC",symbol:"BTCUSDT",label:"BTC"},
+  {card:"HYPE",symbol:"HYPEUSDT",label:"HYPE"},
+  {card:"XAU",symbol:"XAUUSDT",label:"XAU"},
+  {card:"CL",symbol:"CLUSDT",label:"CL"},
+  {card:"NVDA",symbol:"NVDAUSDT",label:"NVDA"},
+  {card:"TSLA",symbol:"TSLAUSDT",label:"TSLA"},
+  {card:"AAPL",symbol:"AAPLUSDT",label:"AAPL"}
+ ];
+ async function loadBitgetFutures(symbol){
+  const base="https://api.bitget.com/api/v2/mix/market/";
+  const qs="productType=USDT-FUTURES&symbol="+encodeURIComponent(symbol);
+  const [tickerResponse,candleResponse]=await Promise.all([
+   fetch(base+"ticker?"+qs,{cache:"no-store",signal:AbortSignal.timeout(10000)}),
+   fetch(base+"candles?"+qs+"&granularity=15m&limit=60",{cache:"no-store",signal:AbortSignal.timeout(10000)})
+  ]);
+  if(!tickerResponse.ok)throw Error("ticker HTTP "+tickerResponse.status);
+  if(!candleResponse.ok)throw Error("candles HTTP "+candleResponse.status);
+  const [tickerPayload,candlePayload]=await Promise.all([tickerResponse.json(),candleResponse.json()]);
+  const ticker=Array.isArray(tickerPayload.data)?tickerPayload.data[0]:tickerPayload.data;
+  if(tickerPayload.code!=="00000"||!ticker)throw Error("Bitget ticker unavailable");
+  if(candlePayload.code!=="00000"||!Array.isArray(candlePayload.data)||!candlePayload.data.length)throw Error("Bitget candles unavailable");
+  const price=Number(ticker.lastPr||ticker.last);
+  const rows=candlePayload.data.slice().reverse();
+  const values=rows.map(row=>Number(row[4])).filter(Number.isFinite);
+  const open=Number(rows[0]?.[1]);
+  if(!Number.isFinite(price)||price<=0||!Number.isFinite(open)||open<=0||values.length<2)throw Error("Invalid Bitget market data");
+  return {price,open,values,time:Number(ticker.ts||rows.at(-1)?.[0])};
+ }
+ async function updateQuote(market){
+  const card=document.querySelector('[data-symbol="'+market.card+'"]');
+  try{
+   const q=await loadBitgetFutures(market.symbol);
+   const pct=(q.price/q.open-1)*100;
+   card.querySelector(".price").textContent=fmt(q.price);
+   card.querySelector(".change").textContent=(pct>=0?"+":"")+pct.toFixed(2)+"% · 15M";
+   card.querySelector(".quote-status").textContent="BITGET FUTURES";
+   card.querySelector(".quote-status").style.color="#67dcb8";
+   const p=pathFor(q.values);
+   card.querySelector(".line").setAttribute("d",p);
+   card.querySelector(".glow").setAttribute("d",p);
+   card.classList.remove("disconnected");
+   quotes[market.card]=q;
+   return true;
+  }catch(e){
+   card.querySelector(".quote-status").textContent=quotes[market.card]?"Bitget 中断 · 保留上次":"Bitget 暂不可用";
+   card.querySelector(".quote-status").style.color="#d9a66d";
+   card.classList.add("disconnected");
+   console.warn("Bitget quote unavailable for "+market.symbol,e);
+   return false;
+  }
+ }
+ let refreshing=false;
+ async function refresh(){
+  if(refreshing)return;
+  refreshing=true;
+  try{
+   const results=await Promise.all(markets.map(updateQuote));
+   const ok=results.filter(Boolean).length;
+   document.getElementById("global-dot").classList.toggle("live",ok>0);
+   document.getElementById("global-status").textContent=ok===7?"Bitget 七品种已连接":ok>0?"Bitget 已连接 "+ok+"/7":"Bitget 行情连接异常";
+   document.getElementById("updated").textContent="最近检查 "+new Date().toLocaleTimeString()+" · Bitget USDT 合约 · 只读";
+   document.getElementById("brain-state").textContent=ok>0?"BITGET MARKET DATA RECEIVED "+ok+"/7":"WAITING FOR BITGET MARKET DATA";
+  }finally{refreshing=false;}
+ }
  refresh();setInterval(refresh,15000);
 })();
 </script>
