@@ -1,4 +1,4 @@
-/* Public market-data adapters. No account credentials and no order endpoints. */
+/* Bitget public market-data adapters only. No account credentials and no order endpoints. */
 const MARKET_TIMEOUT_MS = 9000;
 
 async function fetchJson(url) {
@@ -15,34 +15,18 @@ async function fetchJson(url) {
 
 async function loadQuote(symbol) {
   const data = await fetchJson("https://api.bitget.com/api/v2/spot/market/tickers?symbol=" + encodeURIComponent(symbol));
-  if (data.code !== "00000" || !data.data || !data.data[0]) throw new Error("Bitget quote unavailable");
+  if (data.code !== "00000" || !data.data || !data.data[0]) throw new Error("Bitget spot quote unavailable");
   const row = data.data[0];
   const price = Number(row.lastPr);
-  if (!Number.isFinite(price) || price <= 0) throw new Error("Invalid Bitget price");
-  return { price, time: Number(row.ts || Date.now()), source: "Bitget public spot" };
+  if (!Number.isFinite(price) || price <= 0) throw new Error("Invalid Bitget spot price");
+  return { price, time: Number(row.ts || Date.now()), source: "Bitget spot" };
 }
 
-async function loadYahoo(symbol) {
-  const encoded = encodeURIComponent(symbol);
-  const urls = [
-    "https://query1.finance.yahoo.com/v8/finance/chart/" + encoded + "?range=1d&interval=1m",
-    "https://query2.finance.yahoo.com/v8/finance/chart/" + encoded + "?range=1d&interval=1m"
-  ];
-  let lastError;
-  for (const url of urls) {
-    try {
-      const data = await fetchJson(url);
-      const item = data.chart && data.chart.result && data.chart.result[0];
-      const price = Number(item && item.meta && item.meta.regularMarketPrice);
-      if (!item || !Number.isFinite(price) || price <= 0) throw new Error("Invalid Yahoo Finance quote");
-      return {
-        price,
-        time: Number(item.meta.regularMarketTime || Date.now() / 1000) * 1000,
-        source: "Yahoo Finance public feed"
-      };
-    } catch (error) {
-      lastError = error;
-    }
-  }
-  throw lastError || new Error("Public quote unavailable");
+async function loadFuturesQuote(symbol) {
+  const data = await fetchJson("https://api.bitget.com/api/v2/mix/market/ticker?productType=USDT-FUTURES&symbol=" + encodeURIComponent(symbol));
+  const row = Array.isArray(data.data) ? data.data[0] : data.data;
+  if (data.code !== "00000" || !row) throw new Error("Bitget USDT-FUTURES quote unavailable");
+  const price = Number(row.lastPr || row.last);
+  if (!Number.isFinite(price) || price <= 0) throw new Error("Invalid Bitget futures price");
+  return { price, time: Number(row.ts || Date.now()), source: "Bitget USDT-FUTURES" };
 }
