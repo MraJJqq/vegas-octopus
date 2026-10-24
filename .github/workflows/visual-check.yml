@@ -156,7 +156,7 @@ jobs:
             const errors = [];
             page.on('pageerror', e => errors.push('pageerror: ' + e.message));
             await page.goto('http://127.0.0.1:8000/index.html', { waitUntil: 'domcontentloaded', timeout: 10000 });
-            await page.waitForFunction(() => !!document.querySelector('#global-status')?.textContent, { timeout: 6000 }).catch(() => {});
+            await page.waitForFunction(() => { const status = document.querySelector('#global-status')?.textContent || ''; const updated = document.querySelector('#updated')?.textContent || ''; return !/正在连接/.test(status) && /最近检查/.test(updated); }, { timeout: 20000 });
             const state = await page.evaluate(() => ({
               status: document.querySelector('#global-status')?.textContent,
               lastUpdated: document.querySelector('#updated')?.textContent,
@@ -168,7 +168,7 @@ jobs:
             const symbols = ['BTC', 'HYPE', 'NVDA', 'TSLA', 'AAPL', 'XAU', 'CL'];
             const missing = symbols.filter(symbol => !(symbol in state.quotes));
             if (missing.length) { console.error('Missing quote nodes: ' + missing.join(', ')); process.exit(1); }
-            if (!state.status || !state.lastUpdated || !/最近检查/.test(state.lastUpdated)) {
+            if (!state.status || /正在连接/.test(state.status) || !state.lastUpdated || !/最近检查/.test(state.lastUpdated)) {
               console.error('Market status or refresh timestamp did not update.'); process.exit(1);
             }
             console.log('QUOTE HEALTH REPORT ' + JSON.stringify(symbols.map(symbol => ({symbol, displayed: state.quotes[symbol], configuredForLiveData: ['BTC', 'HYPE'].includes(symbol)}))));
