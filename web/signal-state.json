@@ -1,20 +1,8 @@
 {
   "connected": true,
-  "source": "MraJJqq/vegas-signal-system v9 read-only state",
-  "source_sha": "2d83d95075f7a2e206d086fc87369cbdae3438a8",
-  "updated_at": "2026-10-24T02:53:22.776935+00:00",
+  "updated_at": "2026-10-24T03:21:26.362780+00:00",
   "signal_date": "2026-10-24",
   "signals": [
-    {
-      "formal_signal": true,
-      "symbol": "TSLAUSDT",
-      "timeframe": "1H",
-      "line": "中锋EMA144",
-      "filter_line": "EMA12",
-      "filter_side": "下方",
-      "close_price": 372.7,
-      "candle_timestamp_ms": 1792803600000
-    },
     {
       "formal_signal": true,
       "symbol": "CRWDUSDT",
@@ -24,6 +12,46 @@
       "filter_side": "上方",
       "close_price": 253.9,
       "candle_timestamp_ms": 1792771200000
+    },
+    {
+      "formal_signal": true,
+      "symbol": "TSLAUSDT",
+      "timeframe": "1H",
+      "line": "中锋EMA144, 中锋EMA169, 红峰EMA676",
+      "filter_line": "EMA12",
+      "filter_side": "下方",
+      "close_price": 372.31,
+      "candle_timestamp_ms": 1792774800000
+    },
+    {
+      "formal_signal": true,
+      "symbol": "TSLAUSDT",
+      "timeframe": "1H",
+      "line": "中锋EMA144",
+      "filter_line": "EMA12",
+      "filter_side": "下方",
+      "close_price": 372.8,
+      "candle_timestamp_ms": 1792782000000
+    },
+    {
+      "formal_signal": true,
+      "symbol": "TSLAUSDT",
+      "timeframe": "1H",
+      "line": "中锋EMA144",
+      "filter_line": "EMA12",
+      "filter_side": "下方",
+      "close_price": 372.8,
+      "candle_timestamp_ms": 1792796400000
+    },
+    {
+      "formal_signal": true,
+      "symbol": "TSLAUSDT",
+      "timeframe": "1H",
+      "line": "中锋EMA144",
+      "filter_line": "EMA12",
+      "filter_side": "下方",
+      "close_price": 372.7,
+      "candle_timestamp_ms": 1792803600000
     }
   ]
 }
