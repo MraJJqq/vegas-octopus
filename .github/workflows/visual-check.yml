@@ -71,6 +71,43 @@ jobs:
           })().catch(error => { console.error(error); process.exit(1); });
           NODE
 
+      - name: Verify browser-side Bitget access from dashboard origin
+        run: |
+          node <<'NODE'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const page = await browser.newPage();
+            const failures = [];
+            page.on('pageerror', error => failures.push(error.message));
+            await page.goto('http://127.0.0.1:8000/index.html', { waitUntil: 'domcontentloaded', timeout: 10000 });
+            const result = await page.evaluate(async () => {
+              const symbols = ['BTCUSDT', 'HYPEUSDT'];
+              const out = [];
+              for (const symbol of symbols) {
+                try {
+                  const response = await fetch('https://api.bitget.com/api/v2/spot/market/tickers?symbol=' + encodeURIComponent(symbol), {
+                    cache: 'no-store',
+                    signal: AbortSignal.timeout(12000)
+                  });
+                  const payload = await response.json();
+                  const row = payload.data && payload.data[0];
+                  const price = Number(row && row.lastPr);
+                  out.push({ symbol, ok: response.ok && payload.code === '00000' && Number.isFinite(price) && price > 0, status: response.status, price: Number.isFinite(price) ? price : null });
+                } catch (error) {
+                  out.push({ symbol, ok: false, error: String(error && error.message || error) });
+                }
+              }
+              return out;
+            });
+            console.log('BROWSER BITGET ACCESS ' + JSON.stringify(result));
+            if (failures.length) throw new Error('Browser page errors: ' + failures.join('; '));
+            if (result.some(item => !item.ok)) throw new Error('Browser cannot read all Bitget public quotes; investigate CORS/network restrictions.');
+            await browser.close();
+            console.log('BROWSER-SIDE BITGET ACCESS PASSED');
+          })().catch(error => { console.error(error); process.exit(1); });
+          NODE
+
       - name: Render dashboard at desktop and iPad landscape sizes
         run: |
           node <<'NODE'
