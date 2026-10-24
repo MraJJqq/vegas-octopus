@@ -3,180 +3,98 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#050b16">
-<title>VEGAS OCTOPUS · Trading Cockpit</title>
+<meta name="theme-color" content="#02040b">
+<title>VEGAS 章鱼 · OCTOPUS</title>
 <style>
-:root{color-scheme:dark;--bg:#050b16;--panel:rgba(10,23,42,.78);--line:rgba(74,196,255,.22);--cyan:#53e6ff;--blue:#648dff;--green:#65ffd0;--red:#ff668d;--muted:#7891ad}
-*{box-sizing:border-box}html,body{margin:0;width:100%;min-height:100%;background:var(--bg);color:#e8f6ff;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC",sans-serif}body{overflow-x:hidden;background:radial-gradient(ellipse at 50% 38%,#102a49 0%,#081426 40%,#040914 100%)}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;background-image:linear-gradient(rgba(83,230,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(83,230,255,.08) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(transparent,#000 15%,#000 85%,transparent)}
-.shell{max-width:1800px;margin:auto;padding:22px 24px 26px;position:relative}.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);padding-bottom:17px}.brand{display:flex;align-items:center;gap:13px}.sigil{width:42px;height:42px;border:1px solid var(--cyan);border-radius:13px;display:grid;place-items:center;color:var(--cyan);font-size:24px;box-shadow:0 0 24px #53e6ff20,inset 0 0 20px #53e6ff13}.eyebrow{font-size:10px;letter-spacing:.28em;color:var(--cyan);text-transform:uppercase}.brand h1{font-size:20px;letter-spacing:.12em;margin:3px 0 0;font-weight:650}.top-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}.pill{border:1px solid var(--line);border-radius:999px;padding:7px 11px;color:#b7d4eb;font-size:11px;letter-spacing:.08em}.pill.demo{border-color:#d6a54d66;color:#ffd27c;background:#d6a54d12}.led{display:inline-block;width:6px;height:6px;border-radius:50%;background:#ffca6a;margin-right:7px;box-shadow:0 0 9px #ffca6a}
-.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}.metric,.panel{background:linear-gradient(135deg,rgba(15,34,57,.86),rgba(5,15,29,.8));border:1px solid var(--line);border-radius:15px;box-shadow:inset 0 1px #ffffff06,0 14px 36px #0002}.metric{padding:14px 17px}.label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}.value{font-size:clamp(18px,2vw,27px);letter-spacing:.02em;margin-top:7px;font-variant-numeric:tabular-nums}.sub{font-size:10px;color:var(--muted);margin-top:5px}.muted{color:var(--muted)}.green{color:var(--green)}.red{color:var(--red)}
-.stage{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;align-items:stretch}.arena{min-height:520px;position:relative;overflow:hidden;padding:20px;background:radial-gradient(ellipse at 50% 50%,#153c5b55,transparent 60%),linear-gradient(160deg,#0a1c30,#07101f 75%)}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;position:relative;z-index:3}.panel-title{font-size:11px;letter-spacing:.18em;color:#c7eaff}.panel-note{font-size:10px;color:var(--muted)}.arena-ring{position:absolute;width:min(65%,580px);aspect-ratio:1;border:1px solid #53e6ff24;border-radius:50%;left:50%;top:53%;transform:translate(-50%,-50%);box-shadow:0 0 55px #53e6ff0a,inset 0 0 50px #53e6ff08}.arena-ring:before,.arena-ring:after{content:"";position:absolute;inset:12%;border:1px dashed #53e6ff26;border-radius:50%;animation:spin 48s linear infinite}.arena-ring:after{inset:26%;border-style:solid;animation-direction:reverse;animation-duration:65s}.crosshair{position:absolute;left:50%;top:53%;width:70%;height:1px;background:linear-gradient(90deg,transparent,#53e6ff25,transparent)}.crosshair.v{width:1px;height:72%;left:50%;top:17%;background:linear-gradient(transparent,#53e6ff22,transparent)}
-.market-node{position:absolute;z-index:2;border:1px solid #4edcff45;background:#07182bd9;border-radius:10px;padding:10px 12px;min-width:128px;box-shadow:0 0 25px #53e6ff0a;backdrop-filter:blur(8px)}.market-node .sym{font-size:13px;font-weight:700;letter-spacing:.12em}.market-node .desc{font-size:9px;color:var(--muted);margin-top:4px}.market-node .price{font-size:13px;margin-top:8px}.node-a{left:4%;top:18%}.node-b{right:5%;top:19%}.node-c{left:5%;bottom:13%}.node-d{right:5%;bottom:12%}.node-e{left:50%;top:12%;transform:translateX(-50%);min-width:115px;text-align:center}
-.creature{position:absolute;left:50%;top:51%;width:240px;height:250px;transform:translate(-50%,-50%);z-index:2;filter:drop-shadow(0 0 20px #55e6ff55);animation:float 5.5s ease-in-out infinite}.creature.two{width:140px;height:150px;left:72%;top:57%;opacity:.65;transform:translate(-50%,-50%) scale(.8);animation-delay:-2.2s}.tentacle{transform-origin:50% 20%;animation:tentacle 3.8s ease-in-out infinite alternate}.tentacle:nth-child(2n){animation-delay:-1.3s}.tentacle:nth-child(3n){animation-delay:-2.4s}.coin{position:absolute;z-index:3;left:58%;top:35%;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;color:#ffe9a4;background:radial-gradient(circle at 30% 25%,#fff0ae,#e5a938 48%,#7e4d10);border:1px solid #ffdf79;box-shadow:0 0 20px #ffc34c80;animation:coinFloat 4.5s ease-in-out infinite}.coin.c2{left:33%;top:66%;animation-delay:-2s;transform:scale(.72)}
-.arena-footer{position:absolute;bottom:16px;left:20px;right:20px;display:flex;justify-content:space-between;gap:10px;font-size:9px;letter-spacing:.12em;color:#7897b4;z-index:4}.side{display:flex;flex-direction:column;gap:14px}.side .panel{padding:17px}.signal-row,.event-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #ffffff0b}.signal-row:last-child,.event-row:last-child{border-bottom:0}.symbol{font-size:12px;font-weight:650;letter-spacing:.07em}.tiny{font-size:10px;color:var(--muted);margin-top:4px}.state{font-size:9px;letter-spacing:.1em;border-radius:5px;padding:5px 7px;border:1px solid #65ffd044;color:var(--green);white-space:nowrap}.state.wait{color:#ffcf75;border-color:#ffcf7544}.event-icon{width:28px;height:28px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;color:var(--cyan);font-size:13px;flex-shrink:0}.event-main{flex:1;min-width:0}.event-main .symbol{font-size:11px}.event-main .tiny{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bottom-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:14px;margin-top:14px}.lower{padding:17px}.chart{height:95px;width:100%;margin-top:15px}.chart svg{width:100%;height:100%;overflow:visible}.chart-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:9px;margin-top:7px}.alloc{display:flex;gap:4px;margin:17px 0 10px;height:8px}.alloc span{border-radius:9px;background:var(--cyan)}.alloc span:nth-child(2){background:#6d8cff}.alloc span:nth-child(3){background:#9c76ff}.alloc span:nth-child(4){background:#55d6ad}.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:10px;color:var(--muted)}.legend i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--cyan);margin-right:5px}.footer{font-size:9px;color:#506b87;display:flex;justify-content:space-between;gap:12px;margin-top:18px;letter-spacing:.08em}
-@keyframes spin{to{transform:rotate(360deg)}}@keyframes float{0%,100%{translate:0 0;rotate:-2deg}50%{translate:0 -11px;rotate:2deg}}@keyframes tentacle{from{rotate:-8deg}to{rotate:9deg}}@keyframes coinFloat{0%,100%{translate:0 0;scale:1}50%{translate:10px -15px;scale:1.08}}
-@media(max-width:900px){.shell{padding:14px}.stage{grid-template-columns:1fr}.arena{min-height:490px}.side{display:grid;grid-template-columns:1fr 1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.bottom-grid{grid-template-columns:1fr}.topbar{align-items:flex-start}.top-right{max-width:48%}}
-@media(max-width:560px){.brand h1{font-size:15px}.eyebrow{font-size:8px}.sigil{width:36px;height:36px}.pill{font-size:9px;padding:6px 8px}.side{grid-template-columns:1fr}.arena{min-height:440px;padding:14px}.market-node{min-width:100px;padding:8px}.node-a{left:3%;top:18%}.node-b{right:3%;top:20%}.node-c{left:3%;bottom:14%}.node-d{right:3%;bottom:13%}.creature{width:190px;height:200px}.creature.two{width:110px;height:120px}.arena-footer{left:14px;right:14px;font-size:8px}.value{font-size:21px}}
-
-/* iPad landscape tuning: preserve cockpit proportions on 10–13 inch screens */
-@media (min-width:901px) and (max-width:1366px) and (orientation:landscape){
-  .shell{padding:14px 16px 16px}
-  .topbar{padding-bottom:11px}
-  .sigil{width:36px;height:36px}
-  .brand h1{font-size:17px}
-  .metrics{gap:9px;margin:12px 0}
-  .metric{padding:10px 13px}
-  .value{font-size:clamp(17px,1.8vw,23px)}
-  .stage{grid-template-columns:minmax(0,1fr) minmax(245px,28%);gap:10px}
-  .arena{min-height:clamp(420px,58vh,620px);padding:15px}
-  .arena-ring{width:min(58%,460px)}
-  .creature{width:clamp(170px,19vw,215px);height:auto}
-  .creature.two{width:clamp(105px,12vw,130px);height:auto}
-  .market-node{min-width:108px;padding:8px 10px}
-  .node-a{left:3%;top:17%}.node-b{right:3%;top:18%}
-  .node-c{left:3%;bottom:12%}.node-d{right:3%;bottom:11%}
-  .side{gap:10px}
-  .side .panel{padding:12px}
-  .signal-row,.event-row{padding:9px 0}
-  .bottom-grid{gap:10px;margin-top:10px}
-  .lower{padding:12px}
-  .chart{height:68px;margin-top:9px}
-  .footer{margin-top:10px;font-size:8px}
-}
-@media (min-width:901px) and (max-height:760px) and (orientation:landscape){
-  .metrics{margin:8px 0}
-  .metric{padding:8px 12px}
-  .sub{margin-top:3px}
-  .arena{min-height:330px}
-  .bottom-grid{margin-top:8px}
-  .chart{height:52px}
-}
-
+:root{color-scheme:dark;--bg:#02040b;--muted:#74839f;--white:#eef6ff;--blue:#52bfff;--gold:#e6c47c;--green:#53e5b4;--purple:#b49aff;--ice:#8beaff}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:var(--bg);color:var(--white);font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC",sans-serif}
+body{overflow:hidden;background:radial-gradient(ellipse at 50% 48%,#11182b 0%,#060914 38%,#02040b 76%)}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(#91a8cf26 .7px,transparent .7px);background-size:23px 23px;opacity:.3}
+#space{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.app{position:relative;z-index:2;width:100%;height:100%;padding:clamp(14px,2vw,30px);display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,28%);grid-template-rows:auto minmax(0,1fr) auto;gap:clamp(10px,1.3vw,20px);max-width:1900px;margin:auto}
+header{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:42px}
+.brand{display:flex;align-items:center;gap:12px}.mark{width:34px;height:34px;border:1px solid #6f8bc866;border-radius:50%;display:grid;place-items:center;color:#a6c7ff;box-shadow:0 0 22px #6f8bc822;font-size:17px}
+.kicker{font-size:9px;letter-spacing:.32em;color:#7e9bbd}.brand h1{font-size:clamp(15px,1.5vw,21px);letter-spacing:.19em;margin:3px 0 0;font-weight:550}.status{font-size:10px;letter-spacing:.1em;color:#93a3bc;display:flex;align-items:center;gap:8px}.dot{width:6px;height:6px;border-radius:50%;background:#7e8da5;display:inline-block}.dot.live{background:#50e1b2;box-shadow:0 0 9px #50e1b2}
+.field{position:relative;min-height:0;overflow:hidden;display:grid;place-items:center}
+.brain-wrap{position:relative;width:min(68%,min(62vh,650px));aspect-ratio:1;display:grid;place-items:center;isolation:isolate}
+.brain-wrap:before{content:"";position:absolute;inset:5%;border-radius:50%;border:1px solid #8b9fff18;box-shadow:inset 0 0 50px #7d79ff09,0 0 70px #6268ff0b;animation:breathe 8s ease-in-out infinite}
+.brain-wrap:after{content:"";position:absolute;inset:14%;border-radius:50%;border:1px dashed #78cfff1b;animation:spin 90s linear infinite}
+#brain{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 24px #6d8dff24)}
+.reserved{position:absolute;left:50%;transform:translateX(-50%);width:min(38%,350px);height:7%;border-top:1px solid #7e9cc51b;border-bottom:1px solid #7e9cc510;opacity:.6}
+.reserved.top{top:1%}.reserved.bottom{bottom:1%}
+.left-note{position:absolute;left:0;bottom:2%;font-size:9px;letter-spacing:.16em;color:#65738d;line-height:1.8}.left-note b{font-weight:500;color:#b3c6e3}
+.markets{min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);align-content:center;gap:clamp(18px,2.2vw,34px) clamp(12px,1.6vw,24px);padding:clamp(14px,2vw,28px) 2px;overflow:auto;scrollbar-width:none}
+.quote{position:relative;min-width:0;padding:7px 0 9px;align-self:center;opacity:.95;transition:opacity .35s}
+.quote:after{content:"";position:absolute;bottom:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,var(--asset),transparent);opacity:.32}
+.quote-head{display:flex;justify-content:space-between;align-items:center;gap:8px}.symbol{font-size:clamp(11px,1vw,14px);letter-spacing:.16em;font-weight:650}.quote-status{font-size:8px;color:#64748b;white-space:nowrap}.price{font-size:clamp(17px,1.7vw,25px);font-weight:450;letter-spacing:-.035em;margin-top:8px;font-variant-numeric:tabular-nums;white-space:nowrap}.change{font-size:10px;color:#f3f7ff;margin-top:4px;font-variant-numeric:tabular-nums}.spark{display:block;width:100%;height:36px;margin-top:9px;overflow:visible}.spark path.line{fill:none;stroke:var(--asset);stroke-width:1.5;vector-effect:non-scaling-stroke}.spark path.glow{fill:none;stroke:var(--asset);stroke-width:5;opacity:.16;filter:blur(3px);vector-effect:non-scaling-stroke}.quote.disconnected .price{color:#738198}.quote.disconnected .spark{opacity:.16}
+footer{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:12px;color:#596983;font-size:9px;letter-spacing:.12em;padding-top:8px;border-top:1px solid #90a9d014}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes breathe{0%,100%{transform:scale(.98);opacity:.7}50%{transform:scale(1.02);opacity:1}}
+@media(max-width:850px){.app{grid-template-columns:minmax(0,1fr) minmax(220px,40%);padding:14px;gap:10px}.brain-wrap{width:min(85%,52vh)}.markets{gap:16px 12px}.price{font-size:clamp(15px,2.3vw,21px)}.spark{height:30px}}
+@media(max-width:650px){body{overflow:auto}.app{height:auto;min-height:100%;grid-template-columns:1fr;grid-template-rows:auto minmax(400px,56vh) auto auto}.field{grid-row:2}.brain-wrap{width:min(76%,48vh)}.markets{grid-template-columns:repeat(2,minmax(0,1fr));grid-row:3;gap:20px 16px;padding:12px 2px}.left-note{font-size:8px}footer{grid-row:4}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important}}
 </style>
 </head>
 <body>
-<main class="shell">
-<header class="topbar">
-  <div class="brand"><div class="sigil">⌘</div><div><div class="eyebrow">Autonomous market organism</div><h1>VEGAS <span style="color:var(--cyan)">OCTOPUS</span></h1></div></div>
-  <div class="top-right"><span class="pill demo" id="market-data-status"><i class="led"></i>行情连接中</span><span class="pill">COCKPIT / 01</span><span class="pill">IPAD LANDSCAPE</span></div>
+<canvas id="space" aria-hidden="true"></canvas>
+<main class="app">
+<header>
+ <div class="brand"><div class="mark">◉</div><div><div class="kicker">LIVE MARKET ORGANISM</div><h1>VEGAS <span style="color:#a7c5ff">章鱼</span></h1></div></div>
+ <div class="status"><i class="dot" id="global-dot"></i><span id="global-status">正在连接公开行情</span></div>
 </header>
-<section class="metrics">
-  <div class="metric"><div class="label">Account equity · demo</div><div class="value">— — —</div><div class="sub">等待接入真实账户数据</div></div>
-  <div class="metric"><div class="label">Unrealized P&amp;L</div><div class="value muted">— — —</div><div class="sub">无账户数据 · 不展示虚构盈亏</div></div>
-  <div class="metric"><div class="label">Active positions</div><div class="value">—</div><div class="sub">等待只读持仓接口</div></div>
-  <div class="metric"><div class="label">Data link</div><div class="value" style="font-size:19px;color:#ffcf75">NOT CONNECTED</div><div class="sub">当前仅布局原型</div></div>
+<section class="field" aria-label="中央能量神经大脑与水母动画">
+ <div class="reserved top" aria-hidden="true"></div><div class="reserved bottom" aria-hidden="true"></div>
+ <div class="brain-wrap"><svg id="brain" viewBox="0 0 600 600" role="img" aria-label="蓝紫色多层神经网络能量大脑"><defs><radialGradient id="core"><stop offset="0" stop-color="#a7c4ff" stop-opacity=".7"/><stop offset=".35" stop-color="#7a83ff" stop-opacity=".23"/><stop offset="1" stop-color="#293b9b" stop-opacity="0"/></radialGradient><filter id="soft"><feGaussianBlur stdDeviation="5"/></filter></defs><circle cx="300" cy="300" r="210" fill="url(#core)"/><g id="brain-net"></g><g id="brain-nodes"></g><circle cx="300" cy="300" r="6" fill="#dbe9ff" opacity=".8"><animate attributeName="opacity" values=".4;.9;.4" dur="3s" repeatCount="indefinite"/></circle></svg></div>
+ <div class="left-note"><b>NEURAL CORE</b><br>READ-ONLY VISUALIZATION<br><span id="brain-state">WAITING FOR MARKET DATA</span></div>
 </section>
-<section class="stage">
-  <div class="panel arena">
-    <div class="panel-head"><div class="panel-title">01 / MARKET ORGANISM FIELD</div><div class="panel-note">CREATURE MOTION · PREVIEW</div></div>
-    <div class="arena-ring"></div><div class="crosshair"></div><div class="crosshair v"></div>
-    <div class="market-node node-a"><div class="sym">BTC / HYPE</div><div class="desc">BITGET SPOT · PUBLIC FEED</div><div class="price">BTC <span data-quote="BTC">连接中</span></div><div class="price">HYPE <span data-quote="HYPE">连接中</span></div></div>
-    <div class="market-node node-b"><div class="sym">US EQUITIES</div><div class="desc">NVDA / TSLA / AAPL</div><div class="price">NVDA <span data-quote="NVDA">连接中</span></div><div class="price">TSLA <span data-quote="TSLA">连接中</span></div><div class="price">AAPL <span data-quote="AAPL">连接中</span></div></div>
-    <div class="market-node node-c"><div class="sym">XAU</div><div class="desc">GOLD FUTURES · GC=F</div><div class="price">$ <span data-quote="XAU">连接中</span></div></div>
-    <div class="market-node node-d"><div class="sym">CL</div><div class="desc">CRUDE OIL FUTURES · CL=F</div><div class="price">$ <span data-quote="CL">连接中</span></div></div>
-    <div class="market-node node-e"><div class="sym">SIGNAL CORE</div><div class="desc">READ-ONLY LINK</div></div>
-    <svg class="creature" viewBox="0 0 240 250" role="img" aria-label="机械章鱼动画概念">
-      <defs><radialGradient id="body" cx="35%" cy="25%"><stop offset="0" stop-color="#b2fbff"/><stop offset=".35" stop-color="#319dbd"/><stop offset=".75" stop-color="#125078"/><stop offset="1" stop-color="#07192c"/></radialGradient><linearGradient id="arm" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#91faff"/><stop offset=".45" stop-color="#267ba5"/><stop offset="1" stop-color="#0b2441"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-      <g fill="none" stroke="url(#arm)" stroke-width="13" stroke-linecap="round">
-        <path class="tentacle" d="M103 123 C61 137 42 164 57 190 S82 209 66 229"/><path class="tentacle" d="M116 133 C91 160 102 187 126 191 S151 213 137 239"/><path class="tentacle" d="M131 131 C163 149 183 172 166 198 S189 219 207 230"/><path class="tentacle" d="M139 117 C182 117 206 139 198 163 S218 184 228 196"/><path class="tentacle" d="M100 112 C68 99 42 107 30 130 S27 156 14 163"/><path class="tentacle" d="M109 96 C92 67 102 45 126 39 S157 23 153 10"/><path class="tentacle" d="M137 98 C165 73 183 80 190 99 S211 115 229 104"/><path class="tentacle" d="M88 120 C58 132 35 128 27 107 S17 84 8 78"/>
-      </g>
-      <g fill="#09243b" stroke="#70efff" stroke-width="1.5" opacity=".85"><circle cx="58" cy="189" r="5"/><circle cx="126" cy="191" r="5"/><circle cx="166" cy="198" r="5"/><circle cx="198" cy="163" r="5"/><circle cx="30" cy="130" r="5"/><circle cx="126" cy="39" r="5"/><circle cx="190" cy="99" r="5"/></g>
-      <path d="M74 111 C71 81 87 57 116 55 C146 52 169 73 167 103 C166 131 149 151 119 151 C92 151 77 136 74 111Z" fill="url(#body)" stroke="#8af7ff" stroke-width="2" filter="url(#glow)"/>
-      <path d="M91 93 Q120 75 151 94 L145 119 Q121 137 96 119Z" fill="#071a2b" stroke="#55e6ff" stroke-width="1.5"/>
-      <ellipse cx="105" cy="104" rx="7" ry="10" fill="#7afff0"/><ellipse cx="135" cy="104" rx="7" ry="10" fill="#7afff0"/><circle cx="107" cy="103" r="3" fill="#fff"/><circle cx="137" cy="103" r="3" fill="#fff"/>
-      <path d="M101 126 Q120 134 140 125" fill="none" stroke="#ffca76" stroke-width="2" stroke-linecap="round"/>
-      <path d="M98 70 L108 60 L128 60 L143 72" fill="none" stroke="#d0ffff" stroke-width="2" opacity=".8"/>
-      <circle cx="121" cy="80" r="4" fill="#d5ffff" filter="url(#glow)"/>
-    </svg>
-    <svg class="creature two" viewBox="0 0 240 250" aria-hidden="true">
-      <g fill="none" stroke="#4ab7df" stroke-width="12" stroke-linecap="round"><path class="tentacle" d="M100 123 C60 145 51 170 68 197 S70 221 54 235"/><path class="tentacle" d="M120 135 C98 164 121 188 141 201 S153 223 143 240"/><path class="tentacle" d="M143 123 C177 139 191 160 176 187 S197 215 220 220"/><path class="tentacle" d="M91 110 C59 93 44 103 30 124 S27 145 14 157"/></g><path d="M75 110 C70 80 91 58 120 57 C151 56 169 78 166 105 C164 134 146 151 119 151 C92 150 78 135 75 110Z" fill="#1c6588" stroke="#6defff" stroke-width="2"/><ellipse cx="105" cy="105" rx="6" ry="9" fill="#7afff0"/><ellipse cx="135" cy="105" rx="6" ry="9" fill="#7afff0"/>
-    </svg>
-    <div class="coin">$</div><div class="coin c2">$</div>
-    <div class="arena-footer"><span>VISUAL MODE: PROTOTYPE</span><span>NO LIVE ORDERS · NO REAL P&amp;L</span></div>
-  </div>
-  <aside class="side">
-    <div class="panel"><div class="panel-head"><div class="panel-title">02 / SIGNAL STREAM</div><div class="panel-note">READ ONLY</div></div>
-      <div class="signal-row"><div><div class="symbol">VEGAS SIGNAL</div><div class="tiny">等待上游信号接口</div></div><span class="state wait">OFFLINE</span></div>
-      <div class="signal-row"><div><div class="symbol">TRIGGER STATUS</div><div class="tiny">未连接 · 不推断信号</div></div><span class="state wait">PENDING</span></div>
-      <div class="signal-row"><div><div class="symbol">LAST UPDATE</div><div class="tiny">暂无真实数据</div></div><span class="state wait">— —</span></div>
-    </div>
-    <div class="panel"><div class="panel-head"><div class="panel-title">03 / EVENT FEED</div><div class="panel-note">REAL EVENTS ONLY</div></div>
-      <div class="event-row"><div class="event-icon">↗</div><div class="event-main"><div class="symbol">PROFIT EVENT</div><div class="tiny">无真实事件 · 不播放抓币动画</div></div></div>
-      <div class="event-row"><div class="event-icon">↘</div><div class="event-main"><div class="symbol">LOSS EVENT</div><div class="tiny">无真实事件 · 不播放吐币动画</div></div></div>
-      <div class="event-row"><div class="event-icon">◎</div><div class="event-main"><div class="symbol">DATA INTEGRITY</div><div class="tiny">占位数据明确标注 · 未伪装实时</div></div></div>
-    </div>
-  </aside>
+<section class="markets" id="markets" aria-label="实时市场行情">
+ <article class="quote disconnected" data-symbol="BTC" style="--asset:#52bfff"><div class="quote-head"><span class="symbol">BTC</span><span class="quote-status">连接中</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
+ <article class="quote disconnected" data-symbol="HYPE" style="--asset:#52bfff"><div class="quote-head"><span class="symbol">HYPE</span><span class="quote-status">连接中</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
+ <article class="quote disconnected" data-symbol="XAU" style="--asset:#e6c47c"><div class="quote-head"><span class="symbol">XAU</span><span class="quote-status">未接入数据源</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
+ <article class="quote disconnected" data-symbol="CL" style="--asset:#53e5b4"><div class="quote-head"><span class="symbol">CL</span><span class="quote-status">未接入数据源</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
+ <article class="quote disconnected" data-symbol="NVDA" style="--asset:#b49aff"><div class="quote-head"><span class="symbol">NVDA</span><span class="quote-status">未接入数据源</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
+ <article class="quote disconnected" data-symbol="TSLA" style="--asset:#b49aff"><div class="quote-head"><span class="symbol">TSLA</span><span class="quote-status">未接入数据源</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
+ <article class="quote disconnected" data-symbol="AAPL" style="--asset:#8beaff"><div class="quote-head"><span class="symbol">AAPL</span><span class="quote-status">未接入数据源</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
 </section>
-<section class="bottom-grid">
-  <div class="panel lower"><div class="panel-head"><div class="panel-title">04 / EQUITY CURVE</div><div class="panel-note">AWAITING ACCOUNT CONNECTOR</div></div><div class="chart"><svg viewBox="0 0 600 100" preserveAspectRatio="none" aria-label="无数据的收益曲线占位"><path d="M0 20H600 M0 50H600 M0 80H600" stroke="#4d7898" stroke-opacity=".18" stroke-dasharray="3 7" fill="none"/><text x="300" y="55" fill="#7891ad" font-size="12" text-anchor="middle">NO ACCOUNT DATA</text></svg></div><div class="chart-labels"><span>曲线将在接入真实账户后显示</span><span>DEMO / EMPTY</span></div></div>
-  <div class="panel lower"><div class="panel-head"><div class="panel-title">05 / MARKET ALLOCATION</div><div class="panel-note">NO POSITION DATA</div></div><div class="alloc"><span style="width:25%;opacity:.4"></span><span style="width:25%;opacity:.4"></span><span style="width:25%;opacity:.4"></span><span style="width:25%;opacity:.4"></span></div><div class="legend"><span><i></i>CRYPTO · —</span><span><i style="background:#6d8cff"></i>EQUITIES · —</span><span><i style="background:#9c76ff"></i>GOLD · —</span><span><i style="background:#55d6ad"></i>OIL · —</span></div></div>
-</section>
-<footer class="footer"><span>VEGAS OCTOPUS · READ-ONLY</span><span id="market-last-updated">等待首次行情请求</span><span>PUBLIC FEEDS · NO ORDERS</span></footer>
+<footer><span>VEGAS OCTOPUS · BUILD 01</span><span id="updated">不展示模拟行情 / 不执行交易</span><span>iPAD · LANDSCAPE READY</span></footer>
 </main>
-<script src="./market-data.js"></script>
 <script>
-(async()=>{
- const jobs=[["BTC",()=>loadFuturesQuote("BTCUSDT"),2],["HYPE",()=>loadFuturesQuote("HYPEUSDT"),4],["NVDA",()=>loadFuturesQuote("NVDAUSDT"),2],["TSLA",()=>loadFuturesQuote("TSLAUSDT"),2],["AAPL",()=>loadFuturesQuote("AAPLUSDT"),2],["XAU",()=>loadFuturesQuote("XAUUSDT"),2],["CL",()=>loadFuturesQuote("CLUSDT"),2]];
- async function tick(){
-  let ok=0;
-  for(const [key,fn,d] of jobs){
-   const el=document.querySelector('[data-quote="'+key+'"]');
-   try{const q=await fn();const ageMs=Math.max(0,Date.now()-Number(q.time||Date.now()));if(el){el.textContent=q.price.toLocaleString("en-US",{maximumFractionDigits:d,minimumFractionDigits:d});el.title=q.source+" · "+new Date(q.time).toLocaleString()+" · "+(ageMs>15*60*1000?"STALE":"FRESH");el.style.color=ageMs>15*60*1000?"#ffcf75":"";}if(ageMs<=15*60*1000)ok++;else throw new Error("Quote is stale");}
-   catch(e){if(el){el.textContent="暂不可用";el.title=String(e.message||e);}}
-  }
-  const status=document.querySelector("#market-data-status");
-  if(status)status.textContent=ok===7?"LIVE FEED · 7/7":ok?"PARTIAL FEED · "+ok+"/7":"FEED UNAVAILABLE";
-  const updated=document.querySelector("#market-last-updated");
-  if(updated)updated.textContent="最近检查 "+new Date().toLocaleTimeString()+" · "+ok+"/7 项可用";
+(() => {
+ const COLORS=["#52bfff","#b49aff","#8beaff","#e6c47c","#53e5b4"];
+ const reduceMotion=matchMedia("(prefers-reduced-motion: reduce)").matches;
+ // Build a layered neural network in the central square.
+ const ns=document.getElementById("brain-net"), dots=document.getElementById("brain-nodes");
+ const pts=[];
+ for(let i=0;i<74;i++){const a=i*2.3999632297,r=55+Math.sqrt((i+.5)/74)*205;pts.push({x:300+Math.cos(a)*r*(.75+Math.random()*.24),y:300+Math.sin(a)*r*(.7+Math.random()*.25),z:Math.random(),p:Math.random()*6.28});}
+ let lines="";
+ pts.forEach((p,i)=>{const nearest=pts.map((q,j)=>({q,j,d:(p.x-q.x)**2+(p.y-q.y)**2})).filter(o=>o.j!==i).sort((a,b)=>a.d-b.d).slice(0,2);nearest.forEach(({q})=>{lines+=`<line x1="${p.x.toFixed(1)}" y1="${p.y.toFixed(1)}" x2="${q.x.toFixed(1)}" y2="${q.y.toFixed(1)}" stroke="${Math.random()>.72?"#8beaff":"#8795ff"}" stroke-opacity=".18" stroke-width=".8"/>`;});});
+ ns.innerHTML=lines;
+ dots.innerHTML=pts.map(p=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${(1+p.z*1.8).toFixed(1)}" fill="${p.z>.7?"#8beaff":"#a7b3ff"}" opacity=".45"><animate attributeName="opacity" values=".2;.85;.2" dur="${(2.8+p.z*4).toFixed(1)}s" begin="-${(p.p%5).toFixed(1)}s" repeatCount="indefinite"/></circle>`).join("");
+ // Five translucent jellyfish, each with 10–12 flowing tendrils.
+ const canvas=document.getElementById("space"),ctx=canvas.getContext("2d");
+ const jellies=COLORS.map((color,i)=>({x:Math.random(),y:Math.random(),z:.45+Math.random()*.5,vx:(Math.random()-.5)*.00018,vy:(Math.random()-.5)*.00015,phase:Math.random()*7,color,target:null,i}));
+ let w=0,h=0,dpr=1;
+ function resize(){dpr=Math.min(devicePixelRatio||1,2);w=innerWidth;h=innerHeight;canvas.width=w*dpr;canvas.height=h*dpr;canvas.style.width=w+"px";canvas.style.height=h+"px";ctx.setTransform(dpr,0,0,dpr,0,0);}
+ addEventListener("resize",resize,{passive:true});resize();
+ const quotes={};
+ function drawJelly(j,t){
+   const x=j.x*w,y=j.y*h,s=(20+j.z*17),activity=Math.min(1,Math.abs(j.vx)+Math.abs(j.vy))*10000;
+   ctx.save();ctx.translate(x,y);ctx.scale(j.z,j.z);ctx.globalAlpha=.46+j.z*.3;
+   const g=ctx.createRadialGradient(-s*.25,-s*.35,1,0,0,s*1.25);g.addColorStop(0,"#ffffffc7");g.addColorStop(.18,j.color+"aa");g.addColorStop(.65,j.color+"55");g.addColorStop(1,j.color+"00");
+   ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(0,0,s*1.05,s*.78+Math.sin(t*.001+j.phase)*2,0,Math.PI,Math.PI*2);ctx.bezierCurveTo(s,-s*.05,s*.6,s*.55,0,s*.65);ctx.bezierCurveTo(-s*.6,s*.55,-s,-s*.05,-s,-s*.05);ctx.fill();
+   ctx.strokeStyle=j.color;ctx.lineWidth=1;ctx.globalAlpha=.28+j.z*.25;
+   for(let k=0;k<11;k++){const a=Math.PI+(k/10)*Math.PI,baseX=Math.cos(a)*s*.75,baseY=Math.sin(a)*s*.15;ctx.beginPath();ctx.moveTo(baseX,baseY);for(let n=1;n<=8;n++){const f=n/8;ctx.lineTo(baseX+Math.sin(t*.0015+j.phase+k*.7+f*4)*s*.18*f,baseY+f*(s*1.25)+Math.cos(t*.001+j.phase+k)*s*.08*f);}ctx.stroke();ctx.beginPath();ctx.arc(baseX+Math.sin(t*.0015+j.phase+k*.7+4)*s*.18,baseY+s*1.25,1.2,0,Math.PI*2);ctx.fillStyle=j.color;ctx.fill();}
+   ctx.restore();
  }
- await tick();setInterval(tick,30000);
+ let last=0;
+ function animate(t){if(!reduceMotion||t-last>1000){ctx.clearRect(0,0,w,h);jellies.forEach(j=>{j.phase+=.0015;j.x+=j.vx;j.y+=j.vy;if(j.x<.03||j.x>.97)j.vx*=-1;if(j.y<.04||j.y>.96)j.vy*=-1;drawJelly(j,t);});last=t;}requestAnimationFrame(animate);}
+ requestAnimationFrame(animate);
+ const fmt=n=>n>=1000?n.toLocaleString("en-US",{maximumFractionDigits:2}):n>=1?n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:4}):n.toLocaleString("en-US",{maximumSignificantDigits:6});
+ function pathFor(values){if(!values||values.length<2)return "";const lo=Math.min(...values),hi=Math.max(...values),range=hi-lo||1;return values.map((v,i)=>(i?"L":"M")+(i*160/(values.length-1)).toFixed(2)+" "+(32-(v-lo)/range*27).toFixed(2)).join(" ");}
+ async function loadBitget(symbol){const url="https://api.bitget.com/api/v2/spot/market/candles?symbol="+symbol+"&granularity=15min&limit=60";const r=await fetch(url,{cache:"no-store"});if(!r.ok)throw Error("HTTP "+r.status);const j=await r.json();if(j.code!=="00000"||!Array.isArray(j.data)||!j.data.length)throw Error("No market data");const rows=j.data.slice().reverse();return {price:Number(rows.at(-1)[4]),open:Number(rows[0][1]),values:rows.map(x=>Number(x[4])),time:Number(rows.at(-1)[0])};}
+ async function updateQuote(symbol){const card=document.querySelector('[data-symbol="'+symbol+'"]');try{const q=await loadBitget(symbol);if(!Number.isFinite(q.price)||q.price<=0)throw Error("Invalid price");const pct=(q.price/q.open-1)*100;card.querySelector(".price").textContent=fmt(q.price);card.querySelector(".change").textContent=(pct>=0?"+":"")+pct.toFixed(2)+"%";card.querySelector(".quote-status").textContent="BITGET · 15M";const p=pathFor(q.values);card.querySelector(".line").setAttribute("d",p);card.querySelector(".glow").setAttribute("d",p);card.classList.remove("disconnected");card.querySelector(".quote-status").style.color="#67dcb8";quotes[symbol]=q;return true;}catch(e){card.querySelector(".quote-status").textContent=quotes[symbol]?"数据中断 · 保留上次":"连接失败";card.classList.add("disconnected");return false;}}
+ async function refresh(){const results=await Promise.all(["BTCUSDT","HYPEUSDT"].map(updateQuote));const ok=results.some(Boolean);document.getElementById("global-dot").classList.toggle("live",ok);document.getElementById("global-status").textContent=ok?"公开行情已连接":"行情连接异常";document.getElementById("updated").textContent="最近检查 "+new Date().toLocaleTimeString()+" · 仅公开行情";document.getElementById("brain-state").textContent=ok?"MARKET DATA RECEIVED":"WAITING FOR MARKET DATA";}
+ refresh();setInterval(refresh,15000);
 })();
 </script>
-
-
-<script>
-(async()=>{
- const rows=[...document.querySelectorAll(".side .panel .signal-row")].slice(0,3);
- const set=(row,selector,value)=>{const el=row?.querySelector(selector);if(el)el.textContent=value;};
- async function refreshVegasSignals(){
-  try{
-   const response=await fetch("./signal-state.json?t="+Date.now(),{cache:"no-store"});
-   if(!response.ok)throw new Error("HTTP "+response.status);
-   const data=await response.json();
-   const signalAge=Date.now()-new Date(data.updated_at||0).getTime();if(!data.updated_at||!Number.isFinite(signalAge)||signalAge>15*60*1000)throw new Error("Signal feed stale");const signals=Array.isArray(data.signals)?data.signals.filter(s=>s&&s.formal_signal):[];
-   const count=signals.length;
-   if(!count){
-    set(rows[0],".symbol","VEGAS V9");set(rows[0],".tiny","今日暂无正式信号");
-    set(rows[0],".state","NO SIGNAL");rows[0]?.querySelector(".state")?.classList.add("wait");
-    set(rows[1],".symbol","SIGNAL BRIDGE");set(rows[1],".tiny",data.updated_at?"最近同步 "+new Date(data.updated_at).toLocaleTimeString():"等待首次信号同步");
-    set(rows[1],".state",data.connected?"CONNECTED":"WAITING");
-    set(rows[2],".symbol","SIGNAL COUNT");set(rows[2],".tiny","只读数据 · 不执行交易");
-    set(rows[2],".state",String(count));return;
-   }
-   const latest=[...new Map([...signals].sort((a,b)=>(b.candle_timestamp_ms||0)-(a.candle_timestamp_ms||0)).map(s=>[(s.symbol||"UNKNOWN").replace(/USDT$/,""),s])).values()].slice(0,3);
-   latest.forEach((s,i)=>{
-    const row=rows[i];if(!row)return;
-    set(row,".symbol",(s.symbol||"UNKNOWN").replace(/USDT$/,""));
-    set(row,".tiny",(s.timeframe||"1H")+" · "+(s.line||"Vegas触发")+" · 收盘"+(s.filter_side||"已确认")+" EMA12");
-    set(row,".state","FORMAL");row.querySelector(".state")?.classList.remove("wait");
-   });
-   if(latest.length<3){const row=rows[2];set(row,".symbol","TODAY TOTAL");set(row,".tiny","今日正式信号 "+count+" 条");set(row,".state","LIVE");}
-   const note=document.querySelector(".arena .panel-note");
-   if(note)note.textContent="VEGAS V9 · "+count+" SIGNAL(S)";
-   const node=document.querySelector(".node-e .desc");
-   if(node)node.textContent="V9 LINK · "+count+" SIGNAL(S)";
-   const creature=document.querySelector(".creature");
-   if(creature){creature.style.filter="drop-shadow(0 0 32px #ffca76cc)";creature.style.animationDuration="2.8s";}
-   document.querySelectorAll(".coin").forEach((coin,i)=>{coin.style.animationDuration=(2.1+i*.45)+"s";coin.style.boxShadow="0 0 28px #ffc34ccc";});
-  }catch(e){
-   set(rows[0],".symbol","VEGAS V9");set(rows[0],".tiny","信号桥暂不可用");
-   set(rows[0],".state","OFFLINE");rows[0]?.querySelector(".state")?.classList.add("wait");
-  }
- }
- await refreshVegasSignals();setInterval(refreshVegasSignals,60000);
-})();
-</script>
-
 </body>
 </html>
