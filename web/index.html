@@ -20,6 +20,7 @@ header{grid-column:1/-1;display:flex;justify-content:space-between;align-items:c
 .brain-wrap:before{content:"";position:absolute;inset:5%;border-radius:50%;border:1px solid #8b9fff18;box-shadow:inset 0 0 50px #7d79ff09,0 0 70px #6268ff0b;animation:breathe 8s ease-in-out infinite}
 .brain-wrap:after{content:"";position:absolute;inset:14%;border-radius:50%;border:1px dashed #78cfff1b;animation:spin 90s linear infinite}
 #brain{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 24px #6d8dff24)}
+.energy-tentacles .tentacle{stroke-dasharray:1;animation:tentacle-flow 7s ease-in-out infinite;transform-origin:300px 360px}.energy-tentacles .t2{animation-delay:-1.1s}.energy-tentacles .t3{animation-delay:-2.2s}.energy-tentacles .t4{animation-delay:-3.3s}.energy-tentacles .t5{animation-delay:-.7s}.energy-tentacles .t6{animation-delay:-1.8s}.energy-tentacles .t7{animation-delay:-2.9s}.energy-tentacles .t8{animation-delay:-4s}.energy-dome{transform-origin:300px 286px;animation:dome-float 5s ease-in-out infinite}.suckers circle{filter:drop-shadow(0 0 3px #8beaff);opacity:.8}@keyframes tentacle-flow{0%,100%{opacity:.8;filter:drop-shadow(0 0 3px #6ceeff)}50%{opacity:1;filter:drop-shadow(0 0 10px #bd9cff)}}@keyframes dome-float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-5px) scale(1.018)}}
 .reserved{position:absolute;left:50%;transform:translateX(-50%);width:min(38%,350px);height:7%;border-top:1px solid #7e9cc51b;border-bottom:1px solid #7e9cc510;opacity:.6}
 .reserved.top{top:1%}.reserved.bottom{bottom:1%}
 .left-note{position:absolute;left:0;bottom:2%;font-size:9px;letter-spacing:.16em;color:#65738d;line-height:1.8}.left-note b{font-weight:500;color:#b3c6e3}
@@ -41,10 +42,60 @@ footer{grid-column:1/-1;display:flex;justify-content:space-between;align-items:c
  <div class="brand"><div class="mark">◉</div><div><div class="kicker">LIVE MARKET ORGANISM</div><h1>VEGAS <span style="color:#a7c5ff">章鱼</span></h1></div></div>
  <div class="status"><i class="dot" id="global-dot"></i><span id="global-status">正在连接 Bitget 行情</span></div>
 </header>
-<section class="field" aria-label="中央能量神经大脑与水母动画">
+<section class="field" aria-label="中央全息能量章鱼动画">
  <div class="reserved top" aria-hidden="true"></div><div class="reserved bottom" aria-hidden="true"></div>
- <div class="brain-wrap"><svg id="brain" viewBox="0 0 600 600" role="img" aria-label="蓝紫色多层神经网络能量大脑"><defs><radialGradient id="core"><stop offset="0" stop-color="#a7c4ff" stop-opacity=".7"/><stop offset=".35" stop-color="#7a83ff" stop-opacity=".23"/><stop offset="1" stop-color="#293b9b" stop-opacity="0"/></radialGradient><filter id="soft"><feGaussianBlur stdDeviation="5"/></filter></defs><circle cx="300" cy="300" r="210" fill="url(#core)"/><g id="brain-net"></g><g id="brain-nodes"></g><circle cx="300" cy="300" r="6" fill="#dbe9ff" opacity=".8"><animate attributeName="opacity" values=".4;.9;.4" dur="3s" repeatCount="indefinite"/></circle></svg></div>
- <div class="left-note"><b>NEURAL CORE</b><br>READ-ONLY VISUALIZATION<br><span id="brain-state">WAITING FOR MARKET DATA</span></div>
+ <div class="brain-wrap"><svg id="brain" viewBox="0 0 600 600" role="img" aria-label="蓝紫色玻璃质感全息能量章鱼"><defs>
+ <radialGradient id="core"><stop offset="0" stop-color="#9efaff" stop-opacity=".8"/><stop offset=".38" stop-color="#8b75ff" stop-opacity=".34"/><stop offset="1" stop-color="#293b9b" stop-opacity="0"/></radialGradient>
+ <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4ffff" stop-opacity=".9"/><stop offset=".22" stop-color="#72e9ff" stop-opacity=".72"/><stop offset=".52" stop-color="#8878ff" stop-opacity=".68"/><stop offset=".78" stop-color="#f2a9ff" stop-opacity=".5"/><stop offset="1" stop-color="#48bfff" stop-opacity=".82"/></linearGradient>
+ <linearGradient id="tentacle" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#80f5ff"/><stop offset=".48" stop-color="#a08aff"/><stop offset=".78" stop-color="#f4aaff"/><stop offset="1" stop-color="#8beaff"/></linearGradient>
+ <radialGradient id="dome"><stop offset="0" stop-color="#eaffff" stop-opacity=".92"/><stop offset=".22" stop-color="#86eaff" stop-opacity=".72"/><stop offset=".58" stop-color="#8b7dff" stop-opacity=".48"/><stop offset=".86" stop-color="#c1a6ff" stop-opacity=".25"/><stop offset="1" stop-color="#a6f7ff" stop-opacity=".05"/></radialGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="5"/></filter>
+ </defs>
+ <circle cx="300" cy="292" r="228" fill="url(#core)"/>
+ <g id="brain-net" opacity=".3"></g><g id="brain-nodes" opacity=".28"></g>
+ <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="#5fdfff" stroke-width="25" opacity=".16" filter="url(#glow)">
+   <path d="M267 354 C218 391 190 434 117 416 S65 357 108 322 S177 312 176 365"/>
+   <path d="M282 360 C250 424 279 468 227 494 S137 480 164 441"/>
+   <path d="M322 354 C376 397 414 428 482 400 S536 347 489 318 S420 317 424 363"/>
+   <path d="M315 360 C350 425 333 468 385 492 S465 479 438 440"/>
+  </g>
+  <g class="energy-tentacles" stroke="url(#tentacle)" stroke-width="13">
+   <path class="tentacle t1" d="M264 350 C224 385 202 429 135 414 S63 359 105 322 S172 314 177 363"/>
+   <path class="tentacle t2" d="M277 359 C250 416 275 459 225 487 S143 479 164 438"/>
+   <path class="tentacle t3" d="M292 365 C285 422 242 456 265 508 S330 531 342 480 S328 418 310 389"/>
+   <path class="tentacle t4" d="M309 363 C329 421 362 458 340 505 S281 527 281 489"/>
+   <path class="tentacle t5" d="M324 354 C372 391 411 427 478 401 S535 348 490 319 S421 319 423 363"/>
+   <path class="tentacle t6" d="M321 360 C351 418 333 459 384 486 S465 478 438 439"/>
+   <path class="tentacle t7" d="M260 337 C211 329 187 287 137 292 S77 328 93 359"/>
+   <path class="tentacle t8" d="M337 337 C387 326 410 282 461 289 S525 326 507 359"/>
+  </g>
+  <g stroke="#e5ffff" stroke-width="2.2" opacity=".92">
+   <path d="M264 350 C224 385 202 429 135 414 S63 359 105 322 S172 314 177 363"/>
+   <path d="M277 359 C250 416 275 459 225 487 S143 479 164 438"/>
+   <path d="M292 365 C285 422 242 456 265 508 S330 531 342 480 S328 418 310 389"/>
+   <path d="M309 363 C329 421 362 458 340 505 S281 527 281 489"/>
+   <path d="M324 354 C372 391 411 427 478 401 S535 348 490 319 S421 319 423 363"/>
+   <path d="M321 360 C351 418 333 459 384 486 S465 478 438 439"/>
+   <path d="M260 337 C211 329 187 287 137 292 S77 328 93 359"/>
+   <path d="M337 337 C387 326 410 282 461 289 S525 326 507 359"/>
+  </g>
+ </g>
+ <g class="suckers" fill="#eaffff" stroke="#76dcff" stroke-width="2">
+  <circle cx="145" cy="405" r="5"/><circle cx="119" cy="390" r="4"/><circle cx="100" cy="365" r="4"/><circle cx="155" cy="448" r="4"/><circle cx="177" cy="470" r="4"/><circle cx="205" cy="484" r="4"/><circle cx="271" cy="490" r="4"/><circle cx="302" cy="510" r="4"/><circle cx="333" cy="485" r="4"/><circle cx="374" cy="473" r="4"/><circle cx="414" cy="467" r="4"/><circle cx="450" cy="448" r="4"/><circle cx="484" cy="394" r="4"/><circle cx="509" cy="370" r="4"/><circle cx="500" cy="333" r="4"/><circle cx="471" cy="302" r="4"/><circle cx="426" cy="301" r="4"/><circle cx="167" cy="300" r="4"/><circle cx="128" cy="305" r="4"/>
+ </g>
+ <g class="energy-dome">
+  <ellipse cx="300" cy="286" rx="111" ry="105" fill="url(#dome)" stroke="#a5f6ff" stroke-opacity=".82" stroke-width="2.5"/>
+  <ellipse cx="300" cy="286" rx="91" ry="86" fill="none" stroke="#f1ffff" stroke-opacity=".55" stroke-width="1.5"/>
+  <path d="M231 267 C244 217 309 196 354 234" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="3" stroke-linecap="round"/>
+  <path d="M230 287 C254 315 278 323 300 323 S349 313 369 284" fill="none" stroke="#91f5ff" stroke-opacity=".62" stroke-width="2"/>
+  <ellipse cx="300" cy="297" rx="46" ry="35" fill="#1b2b83" fill-opacity=".4" stroke="#b8ffff" stroke-opacity=".8" stroke-width="2"/>
+  <path d="M275 295 L300 269 L325 295 L300 320 Z" fill="#74f3ff" fill-opacity=".75" stroke="#edffff" stroke-width="2"/>
+  <circle cx="300" cy="296" r="9" fill="#f5ffff"><animate attributeName="opacity" values=".55;1;.55" dur="2.4s" repeatCount="indefinite"/></circle>
+ </g>
+ <g fill="none" stroke="#8bf4ff" stroke-width="1.4" opacity=".6"><ellipse cx="300" cy="526" rx="120" ry="18"/><ellipse cx="300" cy="526" rx="83" ry="11"/><path d="M300 525 V474"><animate attributeName="opacity" values=".25;.8;.25" dur="2s" repeatCount="indefinite"/></path></g>
+</svg></div>
+ <div class="left-note"><b>HOLOGRAPHIC OCTOPUS</b><br>READ-ONLY VISUALIZATION<br><span id="brain-state">ENERGY ENTITY STANDBY</span></div>
 </section>
 <section class="markets" id="markets" aria-label="实时市场行情">
  <article class="quote disconnected" data-symbol="BTC" style="--asset:#52bfff"><div class="quote-head"><span class="symbol">BTC</span><span class="quote-status">连接中</span></div><div class="price">—</div><div class="change">—</div><svg class="spark" viewBox="0 0 160 36" preserveAspectRatio="none"><path class="glow"></path><path class="line"></path></svg></article>
@@ -150,7 +201,7 @@ footer{grid-column:1/-1;display:flex;justify-content:space-between;align-items:c
    document.getElementById("global-dot").classList.toggle("live",ok>0);
    document.getElementById("global-status").textContent=ok===7?"Bitget 七品种已连接":ok>0?"Bitget 已连接 "+ok+"/7":"Bitget 行情连接异常";
    document.getElementById("updated").textContent="最近检查 "+new Date().toLocaleTimeString()+" · Bitget USDT 合约 · 只读";
-   document.getElementById("brain-state").textContent=ok>0?"BITGET MARKET DATA RECEIVED "+ok+"/7":"WAITING FOR BITGET MARKET DATA";
+   document.getElementById("brain-state").textContent=ok>0?"MARKET FEED ACTIVE "+ok+"/7":"WAITING FOR BITGET MARKET DATA";
   }finally{refreshing=false;}
  }
  refresh();setInterval(refresh,15000);
