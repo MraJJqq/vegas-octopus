@@ -127,20 +127,18 @@ jobs:
                 animations: 'disabled'
               });
               const result = await page.evaluate(() => {
-                const selectors = ['.topbar', '.metrics', '.stage', '.arena', '.side', '.bottom-grid', '.footer', '.creature', '.market-node'];
+                const selectors = ['.app', 'header', '.field', '.brain-wrap', '#brain', '.markets', 'footer', '.quote', '.spark'];
                 const missingCoreSections = selectors.filter(s => !document.querySelector(s));
-                const arena = document.querySelector('.arena')?.getBoundingClientRect();
-                const nodes = [...document.querySelectorAll('.market-node')].map(el => {
-                  const r = el.getBoundingClientRect();
-                  return { name: el.querySelector('.sym')?.textContent?.trim(), insideArena: !!arena && r.left >= arena.left - 1 && r.right <= arena.right + 1 && r.top >= arena.top - 1 && r.bottom <= arena.bottom + 1 };
-                });
-                return { viewport: { width: innerWidth, height: innerHeight }, documentWidth: document.documentElement.scrollWidth, horizontalOverflow: document.documentElement.scrollWidth > innerWidth, missingCoreSections, arenaNodesInside: nodes };
+                const markets = document.querySelector('.markets')?.getBoundingClientRect();
+                const cards = [...document.querySelectorAll('.quote')].map(el => ({symbol: el.dataset.symbol, hasPrice: !!el.querySelector('.price'), insideMarkets: !!markets && el.getBoundingClientRect().left >= markets.left - 1 && el.getBoundingClientRect().right <= markets.right + 1}));
+                return { viewport: { width: innerWidth, height: innerHeight }, documentWidth: document.documentElement.scrollWidth, horizontalOverflow: document.documentElement.scrollWidth > innerWidth, missingCoreSections, marketCards: cards };
               });
               console.log(JSON.stringify({ case: c.name, ...result }, null, 2));
               if (result.horizontalOverflow) failures.push(`${c.name}: horizontal overflow`);
               if (result.missingCoreSections.length) failures.push(`${c.name}: missing sections ${result.missingCoreSections.join(', ')}`);
-              const outside = result.arenaNodesInside.filter(n => !n.insideArena);
-              if (outside.length) failures.push(`${c.name}: market nodes outside arena: ${outside.map(n => n.name).join(', ')}`);
+              if (result.marketCards.length !== 7) failures.push(`${c.name}: expected 7 market cards, found ${result.marketCards.length}`);
+              const missingPrices = result.marketCards.filter(n => !n.hasPrice);
+              if (missingPrices.length) failures.push(`${c.name}: cards missing price elements: ${missingPrices.map(n => n.symbol).join(', ')}`);
             }
             await browser.close();
             if (failures.length) { console.error('VISUAL CHECK FAILED:\\n' + failures.join('\\n')); process.exit(1); }
