@@ -44,8 +44,8 @@ jobs:
         run: |
           node <<'NODE'
           const checks = [
-            { symbol: 'BTCUSDT', provider: 'Bitget', url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=BTCUSDT', price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 },
-            { symbol: 'HYPEUSDT', provider: 'Bitget', url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=HYPEUSDT', price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 },
+            { symbol: 'BTCUSDT', provider: 'Bitget USDT-FUTURES', url: 'https://api.bitget.com/api/v2/mix/market/ticker?productType=USDT-FUTURES&symbol=BTCUSDT', price: p => Number((Array.isArray(p.data) ? p.data[0] : p.data)?.lastPr || (Array.isArray(p.data) ? p.data[0] : p.data)?.last), valid: p => p.code === '00000' && !!(Array.isArray(p.data) ? p.data[0] : p.data) },
+            { symbol: 'HYPEUSDT', provider: 'Bitget USDT-FUTURES', url: 'https://api.bitget.com/api/v2/mix/market/ticker?productType=USDT-FUTURES&symbol=HYPEUSDT', price: p => Number((Array.isArray(p.data) ? p.data[0] : p.data)?.lastPr || (Array.isArray(p.data) ? p.data[0] : p.data)?.last), valid: p => p.code === '00000' && !!(Array.isArray(p.data) ? p.data[0] : p.data) },
             ...['NVDAUSDT', 'TSLAUSDT', 'AAPLUSDT', 'XAUUSDT', 'CLUSDT'].map(symbol => ({ symbol, provider: 'Bitget USDT-FUTURES', url: 'https://api.bitget.com/api/v2/mix/market/ticker?productType=USDT-FUTURES&symbol=' + symbol, price: p => Number((Array.isArray(p.data) ? p.data[0] : p.data)?.lastPr || (Array.isArray(p.data) ? p.data[0] : p.data)?.last), valid: p => p.code === '00000' && !!(Array.isArray(p.data) ? p.data[0] : p.data) }))
           ];
           (async () => {
@@ -75,8 +75,8 @@ jobs:
             await page.goto('http://127.0.0.1:8000/index.html', { waitUntil: 'domcontentloaded', timeout: 10000 });
             const result = await page.evaluate(async () => {
               const checks = [
-                { symbol: 'BTC', url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=BTCUSDT', price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 },
-                { symbol: 'HYPE', url: 'https://api.bitget.com/api/v2/spot/market/tickers?symbol=HYPEUSDT', price: p => Number(p.data?.[0]?.lastPr), valid: p => p.code === '00000' && Array.isArray(p.data) && p.data.length > 0 },
+                { symbol: 'BTC', url: 'https://api.bitget.com/api/v2/mix/market/ticker?productType=USDT-FUTURES&symbol=BTCUSDT', price: p => Number((Array.isArray(p.data) ? p.data[0] : p.data)?.lastPr || (Array.isArray(p.data) ? p.data[0] : p.data)?.last), valid: p => p.code === '00000' && !!(Array.isArray(p.data) ? p.data[0] : p.data) },
+                { symbol: 'HYPE', url: 'https://api.bitget.com/api/v2/mix/market/ticker?productType=USDT-FUTURES&symbol=HYPEUSDT', price: p => Number((Array.isArray(p.data) ? p.data[0] : p.data)?.lastPr || (Array.isArray(p.data) ? p.data[0] : p.data)?.last), valid: p => p.code === '00000' && !!(Array.isArray(p.data) ? p.data[0] : p.data) },
                 ...['NVDAUSDT', 'TSLAUSDT', 'AAPLUSDT', 'XAUUSDT', 'CLUSDT'].map(symbol => ({ symbol, url: 'https://api.bitget.com/api/v2/mix/market/ticker?productType=USDT-FUTURES&symbol=' + symbol, price: p => Number((Array.isArray(p.data) ? p.data[0] : p.data)?.lastPr || (Array.isArray(p.data) ? p.data[0] : p.data)?.last), valid: p => p.code === '00000' && !!(Array.isArray(p.data) ? p.data[0] : p.data) }))
               ];
               const out = [];
