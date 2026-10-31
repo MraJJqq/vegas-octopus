@@ -132,11 +132,11 @@ function create(root,layers,LWC,getActive){
    applyRange(view,r.to-width,r.to);
   },{passive:false});
  });
- window.addEventListener('pagehide',()=>{capture(activeView());save();},{passive:true});
+ function onPageHide(){capture(activeView());save();}\n window.addEventListener('pagehide',onPageHide,{passive:true});
  return{views,setData,sync,capture,resize:scheduleResize,destroy(){
-  clearTimeout(saveTimer);if(resizeFrame)cancelAnimationFrame(resizeFrame);
-  resizeObserver?.disconnect();window.removeEventListener('resize',scheduleResize);
-  views.forEach(view=>{view.chart.remove();view.gesture.remove();});
+  save();clearTimeout(saveTimer);if(resizeFrame)cancelAnimationFrame(resizeFrame);
+  resizeObserver?.disconnect();window.removeEventListener('resize',scheduleResize);window.removeEventListener('pagehide',onPageHide);
+  views.forEach(view=>{view.chart.remove();view.gesture.remove();view.host.remove();});
  }};
 }
 window.VegasKlineChart={create};
