@@ -189,6 +189,7 @@ function resume(event){
 function hide(){
  ++token;clearTimer();clearRefresh();state='hidden';root.hidden=true;
  views.forEach(view=>{view.requestId=(view.requestId||0)+1;view.hasData=false;view.symbol='';});
+ if(chart){chart.capture(views[active]);chart.destroy();chart=null;views=[];}
 }
 function setQueue(values){
  const next=[...new Set((values||[]).map(x=>String(x||'').trim().toUpperCase()).filter(x=>/^[A-Z0-9.]+$/.test(x)))];
