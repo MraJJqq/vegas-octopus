@@ -33,7 +33,7 @@ function normalizeMini(rows){
 async function refreshMini(instruments,visibleSymbols){
  if(stopped||document.hidden)return;
  const visible=new Set((Array.isArray(visibleSymbols)?visibleSymbols:[]).map(x=>String(x||'').toUpperCase()));
- if(!visible.size)instruments.slice(0,9).forEach(item=>visible.add(item.symbol));
+ if(!visible.size)return;
  const now=Date.now();
  const queue=instruments.filter(item=>visible.has(item.symbol)&&now-(miniLastAt.get(item.symbol)||0)>=MINI_REFRESH_MS&&!miniInFlight.has(item.symbol));
  if(!queue.length)return;
