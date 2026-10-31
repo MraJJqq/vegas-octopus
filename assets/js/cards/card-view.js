@@ -29,11 +29,10 @@ function mount(root,instruments,onSelect){
   const card=root.querySelector('#mc-c'+item.index);
   item.nodes={card,price:card.querySelector('.mc-price'),change:card.querySelector('.mc-chg'),chart:card.querySelector('.mc-chart')};
  });
+ const chartOwners=new WeakMap();
+ items.forEach(item=>chartOwners.set(item.nodes.chart,item));
  const resizeObserver='ResizeObserver'in window?new ResizeObserver(entries=>{
-  entries.forEach(entry=>{
-   const item=items.find(x=>x.nodes.chart===entry.target);
-   if(item)draw(item);
-  });
+  entries.forEach(entry=>{const item=chartOwners.get(entry.target);if(item)draw(item);});
  }):null;
  items.forEach(item=>resizeObserver?.observe(item.nodes.chart));
  let touchTarget=null,touchX=0,touchY=0,lastTouchAt=0;
