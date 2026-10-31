@@ -13,8 +13,11 @@ const CLEAR_MS=5000,TRANSITION_MS=5000,REVEAL_MS=1000,INITIAL_HOLD_MS=4000,REFRE
 let queue=[],currentIndex=0,manualSymbol='',active=0,period='4H',state='hidden',timer=0,refreshTimer=0,token=0,initialShown=false,refreshPending=false;
 const activePointers=new Set();
 const periodSettings=(()=>{try{const saved=JSON.parse(localStorage.getItem('vegas-right-track-v1')||'{}');return Object.fromEntries(Object.entries(saved).filter(([,v])=>data.periods.includes(v?.period)).map(([s,v])=>[s,v.period]));}catch{return{};}})();
-const chart=window.VegasKlineChart.create(root,layers,LWC,()=>active);
-const views=chart.views;
+let chart=null,views=[];
+function ensureChart(){
+ if(!chart){chart=window.VegasKlineChart.create(root,layers,LWC,()=>active);views=chart.views;}
+ return chart;
+}
 const current=()=>manualSymbol||queue[currentIndex]||'';
 const periodFor=s=>periodSettings[s]||'4H';
 function setPeriodButtons(){
@@ -36,7 +39,7 @@ function setLayerStyles(index,transition=false){
  });
 }
 function showRoot(){
- root.hidden=false;requestAnimationFrame(()=>chart.resize());
+ ensureChart();root.hidden=false;requestAnimationFrame(()=>chart?.resize());
 }
 function updateHeader(symbol,rows){
  title.textContent=symbol;
