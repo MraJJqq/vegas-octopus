@@ -12,11 +12,13 @@ const symbols=[...read('assets/js/core/market-universe.js').matchAll(/\['([A-Z]+
 if(symbols.length!==27)fail('Expected 27 instruments; found '+symbols.length);
 const market=read('assets/js/core/market-data.js');
 if(!market.includes('/api/v3/market/candles?')||!market.includes('/api/v2/mix/market/candles?'))fail('Bitget spot/Mix endpoints missing');
+if(!market.includes('visibleSymbols')||!market.includes('miniLastAt')||!market.includes('length:2'))fail('Visible-card mini-candle throttling missing');
 const kline=read('assets/js/kline/kline-data.js');
 if(!kline.includes('/api/v3/market/candles')||!kline.includes('/api/v2/mix/market/candles'))fail('K-line Bitget endpoints missing');
 const card=read('assets/js/cards/card-system.js'),controller=read('assets/js/kline/kline-controller.js');
 if(!card.includes('VegasLayer5ShowSymbol')||!card.includes('VegasLayer5SetAutoQueue'))fail('Card/K-line bridge missing');
 if(!controller.includes('window.VegasLayer5ShowSymbol=selectSymbol')||!controller.includes('window.VegasLayer5SetAutoQueue=setQueue'))fail('K-line public contract missing');
+if(!controller.includes('function ensureChart()')||!controller.includes('chart.destroy();chart=null;views=[];'))fail('Lazy K-line lifecycle missing');
 const html=read('index.html');
 for(const p of ['assets/js/signals/v9-events.js','assets/js/core/market-universe.js','assets/js/core/market-data.js','assets/js/cards/card-view.js','assets/js/scroll/scroll-engine.js','assets/js/cards/card-system.js','assets/js/kline/kline-data.js'])if(!html.includes(p))fail('Entry point missing '+p);
 if(!html.includes("chart.src='./assets/js/kline/kline-chart.js")||!html.includes("app.src='./assets/js/kline/kline-controller.js"))fail('Dynamic K-line loader missing');
