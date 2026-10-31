@@ -3,7 +3,6 @@
 'use strict';
 if(window.VegasMarketData)return;
 const API='https://api.bitget.com',REFRESH_MS=15000,MINI_REFRESH_MS=60000;
-const stockSymbols=new Set((window.VegasMarketUniverse||[]).filter(x=>x.isSpotStock).map(x=>x.symbol));
 let stockMap=null,stockMapAt=0,stockMapPromise=null,refreshTimer=0,refreshing=false,stopped=false;
 const miniLastAt=new Map(),miniInFlight=new Set();
 const snapshots=new Map();
@@ -106,7 +105,7 @@ function start(instruments,onUpdate,getVisibleSymbols){
 }
 function onVisibility(){
  if(document.hidden){if(refreshTimer)clearTimeout(refreshTimer);refreshTimer=0;return;}
- refreshTimer=0;refresh(instrumentsRef,updateRef,visibleRef).finally(()=>schedule(instrumentsRef,updateRef,visibleRef));
+ refreshTimer=0;refresh(instrumentsRef,updateRef,visibleRef).catch(error=>console.warn('[Vegas Market Data] resume failed:',error)).finally(()=>schedule(instrumentsRef,updateRef,visibleRef));
 }
 let instrumentsRef=[],updateRef=null,visibleRef=null;
 function mount(instruments,onUpdate,getVisibleSymbols){
