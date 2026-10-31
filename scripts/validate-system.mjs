@@ -26,4 +26,10 @@ if(!controller.includes('function ensureChart()')||!controller.includes('chart.d
 const html=read('index.html');
 for(const p of ['assets/js/signals/v9-events.js','assets/js/core/market-universe.js','assets/js/core/market-data.js','assets/js/cards/card-view.js','assets/js/scroll/scroll-engine.js','assets/js/cards/card-system.js','assets/js/kline/kline-data.js'])if(!html.includes(p))fail('Entry point missing '+p);
 if(!html.includes("chart.src='./assets/js/kline/kline-chart.js")||!html.includes("app.src='./assets/js/kline/kline-controller.js"))fail('Dynamic K-line loader missing');
+const signalReader=read('assets/js/signals/v9-events.js');
+const signalFeed=JSON.parse(read('data/v9-signals.json'));
+if(!signalReader.includes('https://raw.githubusercontent.com/MraJJqq/vegas-octopus/main/data/v9-signals.json'))fail('V1 must read its own V9 signal feed directly');
+if(!signalFeed.__daily_formal_signals__||!Array.isArray(signalFeed.__daily_formal_signals__.signals))fail('V1 V9 signal feed schema is invalid');
+const runtimeFiles=[...jsFiles,'index.html'];
+for(const file of runtimeFiles)if(/vegas-octopus-v2|octopus-v2/i.test(read(file)))fail('V1 runtime must not depend on V2: '+file);
 if(!failed)console.log('PASS: syntax, 27 instruments, Bitget endpoints, module paths and card/K-line contracts.');else process.exitCode=1;
