@@ -132,7 +132,8 @@ function create(root,layers,LWC,getActive){
    applyRange(view,r.to-width,r.to);
   },{passive:false});
  });
- function onPageHide(){capture(activeView());save();}\n window.addEventListener('pagehide',onPageHide,{passive:true});
+ function onPageHide(){capture(activeView());save();}
+ window.addEventListener('pagehide',onPageHide,{passive:true});
  return{views,setData,sync,capture,resize:scheduleResize,destroy(){
   save();clearTimeout(saveTimer);if(resizeFrame)cancelAnimationFrame(resizeFrame);
   resizeObserver?.disconnect();window.removeEventListener('resize',scheduleResize);window.removeEventListener('pagehide',onPageHide);
