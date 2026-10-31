@@ -1,6 +1,6 @@
 # Vegas Octopus V1 — Core Systems Rebuild
 
-V1 is an independent rebuild of the three core visualization systems. It does not import or execute code from the V2 repository.
+V1 is a self-contained rebuild of the three core visualization systems. It does not load code, assets, or runtime services from another Octopus deployment.
 
 ## Architecture
 - `assets/js/core/`: immutable instrument universe and Bitget market-data transport/cache.
