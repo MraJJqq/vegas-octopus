@@ -155,7 +155,10 @@ function mount(root,slots){
  const observer='ResizeObserver'in window?new ResizeObserver(onResize):null;
  observer?.observe(root);ordered.forEach(node=>observer?.observe(node));
  const intersection='IntersectionObserver'in window?new IntersectionObserver(entries=>{
-  entries.forEach(entry=>entry.target.classList.toggle('mc-in-view',entry.isIntersecting));
+  entries.forEach(entry=>{
+   entry.target.classList.toggle('mc-in-view',entry.isIntersecting);
+   root.dispatchEvent(new CustomEvent('mc-slot-visibility',{detail:{slot:entry.target,visible:entry.isIntersecting}}));
+  });
  },{root,threshold:.01}):null;
  ordered.forEach(node=>intersection?intersection.observe(node):node.classList.add('mc-in-view'));
  measure();focus();requestFrame();
