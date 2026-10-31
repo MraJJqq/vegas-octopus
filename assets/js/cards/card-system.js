@@ -25,7 +25,8 @@ window.VegasApplyFormalSignals=function(){
  else window.__VEGAS_PENDING_LAYER5_QUEUE=formalSymbols.slice();
 };
 window.VegasApplyFormalSignals();
-const visibleSymbols=()=>Array.from(root.querySelectorAll('.mc-slot.mc-in-view .mc-card[data-symbol]'),node=>node.dataset.symbol);\nconst stopData=window.VegasMarketData.mount(universe,snapshot=>view.update(snapshot),visibleSymbols);
+const visibleSymbols=()=>Array.from(root.querySelectorAll('.mc-slot.mc-in-view .mc-card[data-symbol]'),node=>node.dataset.symbol);
+const stopData=window.VegasMarketData.mount(universe,snapshot=>view.update(snapshot),visibleSymbols);
 window.addEventListener('pagehide',()=>{
  stopData?.();scroll.destroy();view.destroy();
 },{once:true});
