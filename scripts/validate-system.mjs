@@ -13,12 +13,13 @@ if(symbols.length!==27)fail('Expected 27 instruments; found '+symbols.length);
 const market=read('assets/js/core/market-data.js');
 if(!market.includes('/api/v3/market/candles?')||!market.includes('/api/v2/mix/market/candles?'))fail('Bitget spot/Mix endpoints missing');
 if(!market.includes('visibleSymbols')||!market.includes('miniLastAt')||!market.includes('length:2'))fail('Visible-card mini-candle throttling missing');
+const kline=read('assets/js/kline/kline-data.js'),scrollEngine=read('assets/js/scroll/scroll-engine.js'),view=read('assets/js/cards/card-view.js'),card=read('assets/js/cards/card-system.js'),controller=read('assets/js/kline/kline-controller.js');
 if(!scrollEngine.includes("removeEventListener('touchend',onTouchEnd)")||!scrollEngine.includes("removeEventListener('touchcancel',onTouchCancel)"))fail('Scroll touch listener teardown missing');
 if(!view.includes('const chartOwners=new WeakMap()'))fail('Card canvas resize lookup optimization missing');
+if(!view.includes('if(candlesChanged&&item.candles.length&&isVisible(item))draw(item)')||!view.includes('visibilityObserver?.disconnect()'))fail('Offscreen mini-chart rendering optimization missing');
 if(!kline.includes('while(cache.size>90)'))fail('K-line cache bound missing');
-const kline=read('assets/js/kline/kline-data.js');
 if(!kline.includes('/api/v3/market/candles')||!kline.includes('/api/v2/mix/market/candles'))fail('K-line Bitget endpoints missing');
-const card=read('assets/js/cards/card-system.js'),view=read('assets/js/cards/card-view.js'),scrollEngine=read('assets/js/scroll/scroll-engine.js'),controller=read('assets/js/kline/kline-controller.js');
+
 if(!card.includes('VegasLayer5ShowSymbol')||!card.includes('VegasLayer5SetAutoQueue'))fail('Card/K-line bridge missing');
 if(!controller.includes('window.VegasLayer5ShowSymbol=selectSymbol')||!controller.includes('window.VegasLayer5SetAutoQueue=setQueue'))fail('K-line public contract missing');
 if(!controller.includes('function ensureChart()')||!controller.includes('chart.destroy();chart=null;views=[];'))fail('Lazy K-line lifecycle missing');
