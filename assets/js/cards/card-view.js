@@ -31,10 +31,14 @@ function mount(root,instruments,onSelect){
  });
  const chartOwners=new WeakMap();
  items.forEach(item=>chartOwners.set(item.nodes.chart,item));
+ const isVisible=item=>item.nodes.card.closest('.mc-slot')?.classList.contains('mc-in-view')===true;
  const resizeObserver='ResizeObserver'in window?new ResizeObserver(entries=>{
-  entries.forEach(entry=>{const item=chartOwners.get(entry.target);if(item)draw(item);});
+  entries.forEach(entry=>{const item=chartOwners.get(entry.target);if(item&&isVisible(item))draw(item);});
  }):null;
- items.forEach(item=>resizeObserver?.observe(item.nodes.chart));
+ const visibilityObserver='IntersectionObserver'in window?new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{if(entry.isIntersecting){const item=items.find(candidate=>candidate.nodes.card.closest('.mc-slot')===entry.target);if(item)draw(item);}});
+ },{root,threshold:.01}):null;
+ items.forEach(item=>{resizeObserver?.observe(item.nodes.chart);visibilityObserver?.observe(item.nodes.card.closest('.mc-slot'));});
  let touchTarget=null,touchX=0,touchY=0,lastTouchAt=0;
  function select(symbol){if(typeof onSelect==='function')onSelect(symbol);}
  function onClick(event){
@@ -95,7 +99,7 @@ function mount(root,instruments,onSelect){
     if(item.nodes.price.textContent!==n)item.nodes.price.textContent=n;
     if(item.nodes.change.textContent!==pct)item.nodes.change.textContent=pct;
    }
-   if(candlesChanged&&item.candles.length)draw(item);
+   if(candlesChanged&&item.candles.length&&isVisible(item))draw(item);
   });
  }
  function setSignals(symbols){
@@ -107,7 +111,7 @@ function mount(root,instruments,onSelect){
   });
  }
  function destroy(){
-  resizeObserver?.disconnect();
+  resizeObserver?.disconnect();visibilityObserver?.disconnect();
   root.removeEventListener('click',onClick,true);
   root.removeEventListener('touchstart',onTouchStart,true);
   root.removeEventListener('touchend',onTouchEnd,true);
