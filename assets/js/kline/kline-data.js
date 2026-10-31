@@ -52,7 +52,9 @@ async function latest(symbol,period){
   const merged=new Map((cache.get(key)?.rows||[]).map(row=>[row.time,row]));
   rows.forEach(row=>merged.set(row.time,row));
   const result=[...merged.values()].sort((a,b)=>a.time-b.time);
-  cache.set(key,{rows:result,at:Date.now()});return result;
+  cache.set(key,{rows:result,at:Date.now()});
+  while(cache.size>90)cache.delete(cache.keys().next().value);
+  return result;
  })();
  inflight.set(key,promise);
  try{return await promise}finally{if(inflight.get(key)===promise)inflight.delete(key);}

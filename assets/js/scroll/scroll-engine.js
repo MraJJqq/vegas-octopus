@@ -119,6 +119,8 @@ function mount(root,slots){
   }
   state.touchY=touch.clientY;state.touchTime=now;requestFrame();
  }
+ function onTouchEnd(){endTouch(false);}
+ function onTouchCancel(){endTouch(true);}
  function endTouch(cancelled){
   if(!state.touching)return;
   state.touching=false;state.dragging=false;
@@ -146,8 +148,8 @@ function mount(root,slots){
  root.addEventListener('scroll',onScroll,{passive:true});
  root.addEventListener('touchstart',onTouchStart,{passive:true});
  root.addEventListener('touchmove',onTouchMove,{passive:false});
- root.addEventListener('touchend',()=>endTouch(false),{passive:true});
- root.addEventListener('touchcancel',()=>endTouch(true),{passive:true});
+ root.addEventListener('touchend',onTouchEnd,{passive:true});
+ root.addEventListener('touchcancel',onTouchCancel,{passive:true});
  document.addEventListener('visibilitychange',onVisibility,{passive:true});
  window.addEventListener('resize',onResize,{passive:true});
  const observer='ResizeObserver'in window?new ResizeObserver(onResize):null;
@@ -160,7 +162,7 @@ function mount(root,slots){
  return{refresh:onResize,destroy(){
   cancelFrame();observer?.disconnect();intersection?.disconnect();
   root.removeEventListener('wheel',onWheel);root.removeEventListener('scroll',onScroll);
-  root.removeEventListener('touchstart',onTouchStart);root.removeEventListener('touchmove',onTouchMove);
+  root.removeEventListener('touchstart',onTouchStart);root.removeEventListener('touchmove',onTouchMove);root.removeEventListener('touchend',onTouchEnd);root.removeEventListener('touchcancel',onTouchCancel);
   document.removeEventListener('visibilitychange',onVisibility);window.removeEventListener('resize',onResize);
  }};
 }
