@@ -4,7 +4,8 @@
 if(window.VegasMarketData)return;
 const API='https://api.bitget.com',REFRESH_MS=15000,MINI_REFRESH_MS=60000;
 const stockSymbols=new Set((window.VegasMarketUniverse||[]).filter(x=>x.isSpotStock).map(x=>x.symbol));
-let stockMap=null,stockMapAt=0,stockMapPromise=null,refreshTimer=0,refreshing=false,miniNextAt=0,stopped=false;
+let stockMap=null,stockMapAt=0,stockMapPromise=null,refreshTimer=0,refreshing=false,stopped=false;
+const miniLastAt=new Map(),miniInFlight=new Set();
 const snapshots=new Map();
 function request(path){
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
@@ -30,16 +31,20 @@ function normalizeMini(rows){
  return rows.map(row=>({time:Number(row[0]),open:Number(row[1]),high:Number(row[2]),low:Number(row[3]),close:Number(row[4])}))
  .filter(c=>Number.isFinite(c.time)&&c.open>0&&c.high>0&&c.low>0&&c.close>0&&c.high>=Math.max(c.open,c.close)&&c.low<=Math.min(c.open,c.close));
 }
-async function refreshMini(instruments){
- if(Date.now()<miniNextAt||document.hidden)return;
- miniNextAt=Date.now()+MINI_REFRESH_MS;
+async function refreshMini(instruments,visibleSymbols){
+ if(stopped||document.hidden)return;
+ const visible=new Set((Array.isArray(visibleSymbols)?visibleSymbols:[]).map(x=>String(x||'').toUpperCase()));
+ if(!visible.size)instruments.slice(0,9).forEach(item=>visible.add(item.symbol));
+ const now=Date.now();
+ const queue=instruments.filter(item=>visible.has(item.symbol)&&now-(miniLastAt.get(item.symbol)||0)>=MINI_REFRESH_MS&&!miniInFlight.has(item.symbol));
+ if(!queue.length)return;
  const map=await getStockMap().catch(()=>stockMap);
- const queue=instruments.filter(x=>!x.isSpotStock||(map&&map.has(x.symbol)));
  let cursor=0;
  async function worker(){
-  while(cursor<queue.length&&!stopped){
-   const item=queue[cursor++],previous=snapshots.get(item.symbol),symbol=item.isSpotStock?map.get(item.symbol):item.contract;
+  while(cursor<queue.length&&!stopped&&!document.hidden){
+   const item=queue[cursor++],previous=snapshots.get(item.symbol),symbol=item.isSpotStock?map?.get(item.symbol):item.contract;
    if(!symbol)continue;
+   miniInFlight.add(item.symbol);
    const limit=previous?.candles?.length?'3':'60';
    const path=item.isSpotStock
     ?'/api/v3/market/candles?'+new URLSearchParams({category:'SPOT',symbol,interval:'1H',limit})
@@ -48,14 +53,18 @@ async function refreshMini(instruments){
     const incoming=normalizeMini(await request(path)),merged=new Map((previous?.candles||[]).map(c=>[c.time,c]));
     incoming.forEach(c=>merged.set(c.time,c));
     const candles=[...merged.values()].sort((a,b)=>a.time-b.time).slice(-60);
-    const next={...(previous||{}),candles};
-    snapshots.set(item.symbol,next);
-   }catch(error){console.warn('[Vegas Market Data] mini candles failed:',item.symbol,error);}
+    snapshots.set(item.symbol,{...(previous||{}),candles});
+    miniLastAt.set(item.symbol,Date.now());
+   }catch(error){
+    console.warn('[Vegas Market Data] mini candles failed:',item.symbol,error);
+   }finally{
+    miniInFlight.delete(item.symbol);
+   }
   }
  }
- await Promise.all(Array.from({length:3},worker));
+ await Promise.all(Array.from({length:2},worker));
 }
-async function refresh(instruments,onUpdate){
+async function refresh(instruments,onUpdate,getVisibleSymbols){
  if(stopped||document.hidden||refreshing)return;
  refreshing=true;
  try{
@@ -77,33 +86,33 @@ async function refresh(instruments,onUpdate){
    if(!(price>0&&open>0))return;
    snapshots.set(item.symbol,{...previous,price,open,exchangeSymbol,updatedAt:Date.now()});
   });
-  await refreshMini(instruments);
+  await refreshMini(instruments,typeof getVisibleSymbols==='function'?getVisibleSymbols():[]);
   if(typeof onUpdate==='function')onUpdate(new Map(snapshots));
  }finally{
   refreshing=false;
  }
 }
-function schedule(instruments,onUpdate){
+function schedule(instruments,onUpdate,getVisibleSymbols){
  if(stopped||document.hidden||refreshTimer)return;
  refreshTimer=setTimeout(async()=>{
   refreshTimer=0;
-  try{await refresh(instruments,onUpdate)}catch(error){console.warn('[Vegas Market Data] refresh failed:',error);}
-  schedule(instruments,onUpdate);
+  try{await refresh(instruments,onUpdate,getVisibleSymbols)}catch(error){console.warn('[Vegas Market Data] refresh failed:',error);}
+  schedule(instruments,onUpdate,getVisibleSymbols);
  },REFRESH_MS);
 }
-function start(instruments,onUpdate){
+function start(instruments,onUpdate,getVisibleSymbols){
  stopped=false;
- refresh(instruments,onUpdate).catch(error=>console.warn('[Vegas Market Data] initial refresh failed:',error)).finally(()=>schedule(instruments,onUpdate));
+ refresh(instruments,onUpdate,getVisibleSymbols).catch(error=>console.warn('[Vegas Market Data] initial refresh failed:',error)).finally(()=>schedule(instruments,onUpdate));
 }
 function onVisibility(){
  if(document.hidden){if(refreshTimer)clearTimeout(refreshTimer);refreshTimer=0;return;}
- refreshTimer=0;refresh(instrumentsRef,updateRef).finally(()=>schedule(instrumentsRef,updateRef));
+ refreshTimer=0;refresh(instrumentsRef,updateRef,visibleRef).finally(()=>schedule(instrumentsRef,updateRef,visibleRef));
 }
-let instrumentsRef=[],updateRef=null;
-function mount(instruments,onUpdate){
- instrumentsRef=instruments;updateRef=onUpdate;
+let instrumentsRef=[],updateRef=null,visibleRef=null;
+function mount(instruments,onUpdate,getVisibleSymbols){
+ instrumentsRef=instruments;updateRef=onUpdate;visibleRef=getVisibleSymbols;
  document.addEventListener('visibilitychange',onVisibility,{passive:true});
- start(instruments,onUpdate);
+ start(instruments,onUpdate,getVisibleSymbols);
  return destroy;
 }
 function destroy(){
