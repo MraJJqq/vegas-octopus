@@ -102,7 +102,7 @@ function schedule(instruments,onUpdate,getVisibleSymbols){
 }
 function start(instruments,onUpdate,getVisibleSymbols){
  stopped=false;
- refresh(instruments,onUpdate,getVisibleSymbols).catch(error=>console.warn('[Vegas Market Data] initial refresh failed:',error)).finally(()=>schedule(instruments,onUpdate));
+ refresh(instruments,onUpdate,getVisibleSymbols).catch(error=>console.warn('[Vegas Market Data] initial refresh failed:',error)).finally(()=>schedule(instruments,onUpdate,getVisibleSymbols));
 }
 function onVisibility(){
  if(document.hidden){if(refreshTimer)clearTimeout(refreshTimer);refreshTimer=0;return;}
